@@ -35,10 +35,10 @@ source(paste0(github_folder,"EconomicIndicators/EconomicIndicators.R"))
 # connection for database
 #
 db_obj <- list(
-  srv = "",
-  dbn = "",
-  id = "",
-  pwd = ""
+  srv = "192.168.2.120,3773",
+  dbn = "WebappAdmin",
+  id = "kmin",
+  pwd = "yuheng"
 )
 
 #

@@ -21,3 +21,5 @@ This connects to IB TWS/Gateway and make trades
 - require(bea.R)
 - require(censusapi)
 - require(quantmod)
+- require(DBI)
+- require(odbc)

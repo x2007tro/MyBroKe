@@ -488,7 +488,7 @@ UtilGetEconIndicators <- function(ei_fred, ei_quandl){
   gei_data <- merge.data.frame(gei_lookup, pd.mthly.output, by="Key")[,-(1:4)]
   lei_data <- merge.data.frame(lei_lookup, pd.mthly.output, by="Key")[,-(1:4)]
   coi_data <- merge.data.frame(coi_lookup, pd.mthly.output, by="Key")[,-(1:4)]
-  lai_data <- merge.data.frame(lai_lookup, pd.mthly.output, by="Key")[,--(1:4)]
+  lai_data <- merge.data.frame(lai_lookup, pd.mthly.output, by="Key")[,-(1:4)]
   
   #
   # Return data
