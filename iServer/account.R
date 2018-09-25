@@ -10,6 +10,12 @@ output$account_snapshot <- DT::renderDataTable({
       orderClasses = FALSE,
       searching = TRUE,
       paging = FALSE
+    ) 
+  ) %>% 
+    DT::formatCurrency("Value", currency = "$", digits = 0) %>% 
+    DT::formatStyle(
+      "Value",
+      fontWeight = "bold",
+      backgroundcolor = "#9acd32"
     )
-  )
 })
