@@ -44,7 +44,7 @@ blotter_tp <- tabPanel(
               column(
                 12,
                 shypka.ddiv(
-                  selectInput("blotter_size_selector", NULL, choices = 1:10, selected = 5, width = blotter_field_default_width)
+                  selectInput("blotter_size_selector", NULL, choices = 1:10, selected = 1, width = blotter_field_default_width)
                 )
               )
             )
