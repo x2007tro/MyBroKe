@@ -78,10 +78,11 @@ lapply(1:max_blotter_size, function(i){
     msg <- res$msg_rec
     trd <- res$trade_rec
     
-    load("history.RData")
-    messages <- rbind(messages, msg)
-    trades <- rbind(trades, trd)
-    save(messages, trades, file="history.RData")
+    ## 
+    # Write message to db
+    WriteDataToSS(db_obj, trd, "MyBroKe_TradeHistory", apd = TRUE)
+    WriteDataToSS(db_obj, msg, "MyBroKe_TradeMessage", apd = TRUE)
+    
     
     ifelse(message_count_trader %% max_message_count == 0, 
            msg_id <- max_message_count,
