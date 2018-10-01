@@ -4,7 +4,6 @@
 require(shiny)
 require(magrittr)
 require(ggplot2)
-source("helper/shypka.R")
 source("helper/utils.R")
 source("helper/dbhelper.R")
 source("global.R", local = FALSE)

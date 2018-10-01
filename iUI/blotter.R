@@ -39,14 +39,6 @@ blotter_tp <- tabPanel(
                   })
                 )            
               )
-            ),
-            fluidRow(
-              column(
-                12,
-                shypka.ddiv(
-                  selectInput("blotter_size_selector", NULL, choices = 1:10, selected = 1, width = blotter_field_default_width)
-                )
-              )
             )
           )
         )
@@ -63,7 +55,7 @@ blotter_tp <- tabPanel(
           tags$div(
             fluidRow(column(
               12,
-              shypka.ddiv(tags$h4(tags$b("Active Orders: "))),   # salmon
+              shypka.ddiv(tags$h4(tags$b("Active Orders"))),   # salmon
               tags$div(textOutput("current_active_trades")),
               tags$br(),
               tags$div(
@@ -136,6 +128,20 @@ blotter_tp <- tabPanel(
           )
         )
       )
-    ) # end of panel 2
+    ), # end of panel 2
+    tabPanel(
+      "Config",
+      
+      fluidRow(
+        column(
+          12,
+          tags$br(),
+          shypka.ddiv(
+            selectInput("blotter_size_selector", tags$b("Slot Size"), choices = 1:10, selected = 1, width = blotter_field_default_width)
+          )
+        )
+      )
+      
+    )
   )
 )

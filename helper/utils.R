@@ -22,6 +22,7 @@ UtilGetPortfolio <- function(){
                               Position = numeric(0),
                               Cost = numeric(0),
                               MktPrc = numeric(0),
+                              MktVal = numeric(0),
                               UnrealizedPNL = numeric(0),
                               UnrealizedPNLPrc = numeric(0),
                               stringsAsFactors = FALSE)
@@ -32,6 +33,7 @@ UtilGetPortfolio <- function(){
                                Position = us_cash,
                                Cost = 0,
                                MktPrc =  us_cash * forex,
+                               MktVal = numeric(0),
                                UnrealizedPNL = 0,
                                UnrealizedPNLPrc = 0,
                                stringsAsFactors = FALSE)
@@ -42,6 +44,7 @@ UtilGetPortfolio <- function(){
                                Position = ca_cash,
                                Cost = 0,
                                MktPrc = ca_cash,
+                               MktVal = numeric(0),
                                UnrealizedPNL = 0,
                                UnrealizedPNLPrc = 0,
                                stringsAsFactors = FALSE)
@@ -57,15 +60,18 @@ UtilGetPortfolio <- function(){
     port_prelim$UnrealizedPNLPrc <- port_prelim$UnrealizedPNL/(port_prelim$Position*port_prelim$AvgCost)
     port_prelim$Cost <- port_prelim$AvgCost
     port_prelim$Position <- port_prelim$Position
+    port_prelim$MktVal <- port_prelim$Position * port_prelim$MktPrc
     
-    port_intrim <- port_prelim[,c("Ticker", "SecurityType", "Position", "Cost", "MktPrc", "UnrealizedPNL", "UnrealizedPNLPrc")]
+    port_intrim <- port_prelim[,c("Ticker", "SecurityType", "Position", "Cost", "MktPrc", 
+                                  "MktVal", "UnrealizedPNL", "UnrealizedPNLPrc")]
     
     us_cash <- ts_tmp$ts_us_cash_balance
     port_us_cash <- data.frame(Ticker = "USD",
                                SecurityType = "CASH",
-                               Position =us_cash,
+                               Position = us_cash,
                                Cost = 0,
                                MktPrc = forex,
+                               MktVal = us_cash,
                                UnrealizedPNL = 0,
                                UnrealizedPNLPrc = 0,
                                stringsAsFactors = FALSE)
@@ -76,6 +82,7 @@ UtilGetPortfolio <- function(){
                                Position = ca_cash,
                                Cost = 0,
                                MktPrc = 1,
+                               MktVal = ca_cash,
                                UnrealizedPNL = 0,
                                UnrealizedPNLPrc = 0,
                                stringsAsFactors = FALSE)
@@ -388,15 +395,8 @@ UtilPlotMarketReturn <- function(master_plot_data, market, period){
     geom_line() +
     #scale_x_date(date_breaks = "1 day", labels = YearMonthDay) +
     ggtitle(paste0("Cumulative Return for ", market, " Market")) +
-    labs(caption = paste0("Plot produced on ", Sys.time())) +
-  theme(rect = element_rect(fill = "#b22222"),
-        panel.background = element_rect(fill = "#b22222"),
-        legend.key = element_rect(fill = "#C0C0C0"),
-        legend.position = "bottom",
-        text = element_text(color = "#ffffff"),
-        axis.text = element_text(color = "#ffffff"),
-        axis.ticks = element_line(color = "#ffffff"),
-        axis.text.x = element_text(color = "#ffffff", angle = 45))
+    labs(caption = paste0("Plot produced on ", format(Sys.time(), "%Y-%m-%d %H:%M:%S"))) +
+    theme_pka()
   
   return(my_plot)
 }
@@ -479,7 +479,7 @@ UtilGetEconIndicators <- function(ei_fred, ei_quandl){
   }, mth.seq)
   pd.mthly.output <- dplyr::bind_cols(res)
   pd.mthly.output[is.na(pd.mthly.output)] <- ""
-  colnames(pd.mthly.output) <- mth.seq
+  colnames(pd.mthly.output) <- format(mth.seq, "%b %Y")
   pd.mthly.output$Key <- c(names(ei_fred), names(ei_quandl))
   
   #

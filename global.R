@@ -9,7 +9,7 @@ active_trade_ids <- c()
 # Common parameters for server and ui
 #
 blotter_field_default_width <- "150px"
-max_blotter_size <- 5
+max_blotter_size <- 10
 max_message_count <- 3
 econ_indi_panel_default_width <- 12
 econ_indi_tab_names <- c("gei_dt", "lei_dt", "coi_dt", "lai_dt")
@@ -30,6 +30,8 @@ if(R.Version()$os == "linux-gnu"){
 source(paste0(github_folder,"IBTWSTradingSession/IB_TWS_TradingSession.R"))
 source(paste0(github_folder,"FinancialSecurityHistoricalData/FinancialSecurityHistoricalData.R"))
 source(paste0(github_folder,"EconomicIndicators/EconomicIndicators.R"))
+source(paste0(github_folder,"Utils/R/shypka.R"))
+source(paste0(github_folder,"Utils/R/ggpthemepka.R"))
 
 #
 # connection for database

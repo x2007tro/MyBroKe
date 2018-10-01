@@ -34,7 +34,7 @@ output$portfolio_dt <- DT::renderDataTable({
       )
     ) %>%
     DT::formatCurrency("Position", currency = "", digits = 0) %>% 
-    DT::formatCurrency(c("Cost", "MktPrc", "UnrealizedPNL"), currency = "$", digits = 0) %>% 
+    DT::formatCurrency(c("Cost", "MktPrc", "MktVal", "UnrealizedPNL"), currency = "$", digits = 0) %>% 
     DT::formatPercentage("UnrealizedPNLPrc", 2) %>% 
     DT::formatStyle(
       c("UnrealizedPNL", "UnrealizedPNLPrc"),
@@ -77,7 +77,7 @@ observeEvent(input$add_trade_list_submit, {
       tags$div(class = "blotter_fields", numericInput(paste0('limit_price',blotter_size_tracker), NULL, value = 1, min = 0, max = 1000, width = blotter_field_default_width)),
       tags$div(class = "blotter_fields", textInput(paste0('trade_value',blotter_size_tracker), NULL, value = "0", width = blotter_field_default_width)),
       tags$div(class = "blotter_fields", checkboxInput(paste0('transmit',blotter_size_tracker), NULL, value = FALSE, width = blotter_field_default_width)),
-      tags$div(class = "blotter_fields", actionButton(paste0('trade',blotter_size_tracker), "Trade", width = blotter_field_default_width))
+      tags$div(class = "blotter_fields", actionButton(class = "btn-primary", paste0('trade',blotter_size_tracker), "Trade", width = blotter_field_default_width))
       #br()
     )
   })
