@@ -71,4 +71,4 @@ names(ei_quandl) <- master_lookup[master_lookup$APISource == "quandl","Key"]
 #
 # Buy/Sell trading session
 #
-ts_static <- TradingSession(22, platform, acct)
+ts_static <- IBTradingSession$new(22, platform, acct)

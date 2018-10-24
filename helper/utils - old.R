@@ -6,16 +6,13 @@
 # Get portfolio data
 # 
 UtilGetPortfolio <- function(){
-  ts_tmp <- IBTradingSession$new(11, platform, acct)
-  ts_tmp$
-    TSSetTransmit(FALSE)$                       #Prevert trade from actually happening
-    TSUpdatePortHoldings()$
-    TSUpdatePortInfo()$
-    TSCloseTradingSession()
-
-  port_prelim <- ts_tmp$TSGetPortHoldings()
+  ts_tmp <- TradingSession(11, platform, acct)
+  ts_tmp <- TSSetTransmit(ts_tmp, FALSE)     #Prevert trade from actually happening
+  ts_tmp <- TSRetrievePortHoldings(ts_tmp)
+  TSCloseTradingSession(ts_tmp)
+  port_prelim <- ts_tmp$ts_port_holdings
   forex <- ts_tmp$ts_exchange_rate
-  acct_info <- ts_tmp$TSGetPortInfo()
+  acct_info <- ts_tmp$ts_port_info
   
   if(nrow(port_prelim) == 0){
     update_time <- Sys.time()
@@ -142,17 +139,10 @@ UtilTradeEquityWithIB <- function(blotter){
     # Trade
     #
     # ts_static <<- TradingSession(22, platform, acct)
-    ts_static$
-      TSSetTransmit(transmit)
-    
-    ts_static$
-      TSSetPrelimTradeList(blotter)
-    
-    ts_static$
-      TSGenFnlTradeList()
-    
-    ts_static$
-      TSExecuteAllTrades()
+    ts_static <<- TSSetTransmit(ts_static, transmit)     
+    ts_static <<- TSSetPrelimTradeList(ts_static, blotter)
+    ts_static <<- TSGenFnlTradeList(ts_static)
+    ts_static <<- TSExecuteAllTrades(ts_static)
     curr_trd_id <- ts_static$ts_trade_ids[length(ts_static$ts_trade_ids)]
     print(curr_trd_id)
     err_msg <- ts_static$ts_last_trade_message[length(ts_static$ts_trade_ids)]
@@ -213,16 +203,16 @@ UtilTradeEquityWithIB <- function(blotter){
   return(list(trade_rec = trade_res, msg_rec = msg))
 }
 
-# blotter <- data.frame(LocalTicker = "GOOGL",
+# blotter <- data.frame(LocalTicker = "IEFA",
 #                       Action = "Buy",
 #                       Quantity = 10,
-#                       OrderType = "Mkt",
+#                       OrderType = "Lmt",
 #                       LimitPrice = 20,
 #                       SecurityType = "Stk",
 #                       Currency = "USD",
-#                       TradeSwitch = TRUE,
+#                       TradeSwitch = FALSE,
 #                       stringsAsFactors = FALSE)
-# res <- UtilTradeEquityWithIB(blotter)
+# res <- UtilTradeWithIB(blotter)
 
 #
 # Trade forex functions
@@ -240,9 +230,8 @@ UtilTradeForexWithIB <- function(blotter){
       expected_us_balance <- curr_us_balance + tgt_value
       
       # ts_static <<- TradingSession(22, platform, acct)
-      ts_static$
-        TSSetTransmit(transmit)$
-        TSExecuteTrade(blotter[i,])
+      ts_static <- TSSetTransmit(ts_static, transmit)     
+      TSExecuteTrade(ts_static, blotter[i,])
       
       actual_us_balance <- UtilFindCurrentHolding("USD")
       
@@ -255,9 +244,8 @@ UtilTradeForexWithIB <- function(blotter){
       expected_ca_balance <- curr_ca_balance + tgt_value - 5   # Account for exchange rate rounding
       
       # ts_static <<- TradingSession(22, platform, acct)
-      ts_static$
-        TSSetTransmit(transmit)     
-        TSExecuteTrade(blotter[i,])
+      ts_static <- TSSetTransmit(ts_static, transmit)     
+      TSExecuteTrade(ts_static, blotter[i,])
       
       actual_ca_balance <- UtilFindCurrentHolding("CAD")
       
@@ -283,7 +271,7 @@ UtilTradeForexWithIB <- function(blotter){
 #
 UtilCancelAllTrades <- function(){
   # Cancel all trades
-  ts_static$TSCancelAllTrades()
+  TSCancelAllTrades(ts_static)
   active_trade_ids <<- c()
   
   # Re-open ts Static
@@ -519,12 +507,12 @@ UtilGetEconIndicators <- function(ei_fred, ei_quandl){
 OpenCloseConn <- function(dirc = c("open", "close")){
   d <- match.arg(dirc)
   if(d == "open"){
-    if(!ts_static$TSIsConnected()){
-      ts_static <<- IBTradingSession$new(22, platform, acct)
+    if(!TSIsConnected(ts_static)){
+      ts_static <<- TradingSession(22, platform, acct)
     }
   } else {
-    if(ts_static$TSIsConnected()){
-      ts_static$TSCloseTradingSession()
+    if(TSIsConnected(ts_static)){
+      TSCloseTradingSession(ts_static)
     }
   }
 }
