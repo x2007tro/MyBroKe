@@ -92,10 +92,10 @@ lapply(1:eq_max_blotter_size, function(i){
           )
         ) %>% 
         DT::formatStyle(
-          c("Exchange"),
+          c("PriExchange"),
           fontWeight = "bold",
           #color = "white",
-          backgroundColor = DT::styleEqual(
+          color = DT::styleEqual(
             unique(res$Exchange),
             brewed_colors[1:length(unique(res$Exchange))]
           )
