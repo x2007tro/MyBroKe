@@ -96,8 +96,8 @@ lapply(1:eq_max_blotter_size, function(i){
           fontWeight = "bold",
           #color = "white",
           color = DT::styleEqual(
-            unique(res$Exchange),
-            brewed_colors[1:length(unique(res$Exchange))]
+            unique(res$PriExchange),
+            brewed_colors[1:length(unique(res$PriExchange))]
           )
         )
     })
