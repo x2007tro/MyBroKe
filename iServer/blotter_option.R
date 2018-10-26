@@ -99,8 +99,8 @@ lapply(1:opt_max_blotter_size, function(i){
           fontWeight = "bold",
           #color = "white",
           backgroundColor = DT::styleEqual(
-            unique(res$ContractRight),
-            brewed_colors[1:length(unique(res$ContractRight))]
+            unique(res$Expiry),
+            brewed_colors[1:length(unique(res$Expiry))]
           )
         ) %>% 
         DT::formatStyle(
@@ -108,8 +108,8 @@ lapply(1:opt_max_blotter_size, function(i){
           fontWeight = "bold",
           #color = "white",
           backgroundColor = DT::styleEqual(
-            unique(res$ContractRight),
-            brewed_colors[1:length(unique(res$ContractRight))]
+            unique(res$Strike),
+            brewed_colors[1:length(unique(res$Strike))]
           )
         ) %>% 
         DT::formatStyle(
@@ -117,8 +117,8 @@ lapply(1:opt_max_blotter_size, function(i){
           fontWeight = "bold",
           #color = "white",
           backgroundColor = DT::styleEqual(
-            unique(res$ContractRight),
-            brewed_colors[1:length(unique(res$ContractRight))]
+            unique(res$Currency),
+            brewed_colors[1:length(unique(res$Currency))]
           )
         )
     })

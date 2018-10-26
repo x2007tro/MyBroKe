@@ -1,7 +1,7 @@
 ##
 # Trade hist tabpanel
 trade_hist_tp <- tabPanel(
-  "History",
+  "Trade History",
   
   tabsetPanel(
     tabPanel(

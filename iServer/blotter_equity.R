@@ -73,7 +73,33 @@ lapply(1:eq_max_blotter_size, function(i){
     
     # Render contract details
     output$eq_cd <- DT::renderDataTable({
-      DT::datatable(res)
+      DT::datatable(
+        res, 
+        options = list(
+          pageLength = 20,
+          orderClasses = TRUE,
+          searching = TRUE,
+          paging = TRUE
+        ) 
+      ) %>%
+        DT::formatStyle(
+          c("Currency"),
+          fontWeight = "bold",
+          #color = "white",
+          backgroundColor = DT::styleEqual(
+            unique(res$Currency),
+            brewed_colors[1:length(unique(res$Currency))]
+          )
+        ) %>% 
+        DT::formatStyle(
+          c("Exchange"),
+          fontWeight = "bold",
+          #color = "white",
+          backgroundColor = DT::styleEqual(
+            unique(res$Exchange),
+            brewed_colors[1:length(unique(res$Exchange))]
+          )
+        )
     })
     
     # update eq trade blotter
