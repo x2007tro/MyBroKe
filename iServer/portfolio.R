@@ -55,7 +55,7 @@ observe({
 # Handle add to trade list
 #
 observeEvent(input$add_trade_list_submit, {
-  blotter_size_tracker <<- blotter_size_tracker + 1
+  eq_blotter_size_tracker <<- eq_blotter_size_tracker + 1
   
   holdings <- port_info()$portfolio
   trade_item <- holdings[holdings$Ticker == input$add_trade_list,]
@@ -66,18 +66,20 @@ observeEvent(input$add_trade_list_submit, {
   security_type <- trade_item[1,"SecurityType"]
   position <- trade_item[1,"Position"]
   
-  output[[paste0('trade_item', blotter_size_tracker)]] <- renderUI({
+  output[[paste0('eq_trade_item', eq_blotter_size_tracker)]] <- renderUI({
     list(
       br(),
-      tags$div(class = "blotter_fields", textInput(paste0('ticker',blotter_size_tracker), NULL, value = ticker, width = blotter_field_default_width)),
-      tags$div(class = "blotter_fields", selectInput(paste0('currency',blotter_size_tracker), NULL, choices = c("CAD","USD"), selected = currency, width = blotter_field_default_width)),
-      tags$div(class = "blotter_fields", selectInput(paste0('side',blotter_size_tracker), NULL, choices = c("Buy", "Sell"), selected = "Sell", width = blotter_field_default_width)),
-      tags$div(class = "blotter_fields", numericInput(paste0('shares',blotter_size_tracker), NULL, value = position, min = 0, max = 1000,  width = blotter_field_default_width)),
-      tags$div(class = "blotter_fields", selectInput(paste0('type',blotter_size_tracker), NULL, choices = c("Lmt", "Mkt"), width = blotter_field_default_width)),
-      tags$div(class = "blotter_fields", numericInput(paste0('limit_price',blotter_size_tracker), NULL, value = 1, min = 0, max = 1000, width = blotter_field_default_width)),
-      tags$div(class = "blotter_fields", textInput(paste0('trade_value',blotter_size_tracker), NULL, value = "0", width = blotter_field_default_width)),
-      tags$div(class = "blotter_fields", checkboxInput(paste0('transmit',blotter_size_tracker), NULL, value = FALSE, width = blotter_field_default_width)),
-      tags$div(class = "blotter_fields", actionButton(class = "btn-primary", paste0('trade',blotter_size_tracker), "Trade", width = blotter_field_default_width))
+      tags$div(class = "blotter_fields", textInput(paste0('eq_ticker',eq_blotter_size_tracker), NULL, value = ticker, width = blotter_field_default_width)),
+      tags$div(class = "blotter_fields_wide", selectInput(paste0('eq_exch',eq_blotter_size_tracker), NULL, choices = c("TSE", "NASDAQ", "NYSE"), width = blotter_field_default_width)),
+      tags$div(class = "blotter_fields", selectInput(paste0('eq_currency',eq_blotter_size_tracker), NULL, choices = c("CAD","USD"), selected = currency, width = blotter_field_default_width)),
+      tags$div(class = "blotter_fields", selectInput(paste0('eq_side',eq_blotter_size_tracker), NULL, choices = c("Buy", "Sell"), selected = "Sell", width = blotter_field_default_width)),
+      tags$div(class = "blotter_fields", numericInput(paste0('eq_shares',eq_blotter_size_tracker), NULL, value = position, min = 0, max = 1000,  width = blotter_field_default_width)),
+      tags$div(class = "blotter_fields", selectInput(paste0('eq_type',eq_blotter_size_tracker), NULL, choices = c("Lmt", "Mkt"), width = blotter_field_default_width)),
+      tags$div(class = "blotter_fields", numericInput(paste0('eq_limit_price',eq_blotter_size_tracker), NULL, value = 1, min = 0, max = 1000, width = blotter_field_default_width)),
+      tags$div(class = "blotter_fields", textInput(paste0('eq_trade_value',eq_blotter_size_tracker), NULL, value = "0", width = blotter_field_default_width)),
+      tags$div(class = "blotter_fields", checkboxInput(paste0('eq_transmit',eq_blotter_size_tracker), NULL, value = FALSE, width = blotter_field_default_width)),
+      tags$div(class = "blotter_fields_wide", actionButton(class = "btn-primary", paste0('eq_reqc',eq_blotter_size_tracker), "Request", width = blotter_field_default_width)),
+      tags$div(class = "blotter_fields_wide", actionButton(class = "btn-primary", paste0('eq_trade',eq_blotter_size_tracker), "Trade", width = blotter_field_default_width))
       #br()
     )
   })

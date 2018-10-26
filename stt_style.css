@@ -58,6 +58,19 @@ body {
   width: 80px;
   float: left;
 }
+.blotter_fields_wide {
+  padding: 0px 5px;
+  margin: 0px 5px;
+  width: 150px;
+  float: left;
+}
+.blotter_fields {
+  padding: 0px 5px;
+  margin: 0px 5px;
+  width: 80px;
+  float: left;
+}
+
 .blotter_fields_right {
   padding: 0px 5px;
   margin: 0px 5px;

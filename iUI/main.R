@@ -1,9 +1,10 @@
 ##
 # Source all ui files
 ##
-ui_files <- c("portfolio", "blotter", "watchlist", "trade_hist",
+ui_files <- c("portfolio", "account", "watchlist", 
+              "blotter_forex", "blotter_equity", "blotter_option", "trade_hist",
               "market_trend", "market_news", "ei",
-              "account", "dev", "conf")
+              "dev", "conf")
 lapply(ui_files, function(f){
   source(paste0("./iUI/", f, ".R"), local = FALSE)
 })
@@ -29,19 +30,22 @@ mainUI <- fluidPage(theme = shinythemes::shinytheme("simplex"),
       navlistPanel(
         widths = c(2,10),
         
-        "Trade",
+        "Account",
         portfolio_tp,
-        blotter_tp,
+        account_tp,
         watchlist_tp,
         trade_hist_tp,
+        
+        "Trade",
+        forex_blotter_tp,
+        equity_blotter_tp,
+        option_blotter_tp,
 
         "Market",
         market_trend_tp,
         market_news_tp,
-        ei_tp,
-
-        "Account",
-        account_tp
+        ei_tp
+        
       )
     ),
 

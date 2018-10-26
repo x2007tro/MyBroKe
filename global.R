@@ -3,20 +3,33 @@
 #
 platform <- "IBG"     # Options: TWS, IBG
 acct <- "Paper"    # Options: Live, Paper
+app_sta <- "Test"
 active_trade_ids <- c()
+brewed_colors <- rep(RColorBrewer::brewer.pal(n = 9, name = "Set1"), 100)
 
 #
 # Common parameters for server and ui
 #
 blotter_field_default_width <- "150px"
-max_blotter_size <- 10
-max_message_count <- 3
+blotter_field_default_width_wide <- "250px"
+
+# equity blotter
+eq_max_blotter_size <- 10
+eq_max_message_count <- 3
+eq_blotter_size_tracker <- 1
+eq_message_count_trader <- 1
+
+# option blotter
+opt_max_blotter_size <- 10
+opt_max_message_count <- 3
+opt_blotter_size_tracker <- 1
+opt_message_count_trader <- 1
+
+# other
 econ_indi_panel_default_width <- 12
 econ_indi_tab_names <- c("gei_dt", "lei_dt", "coi_dt", "lai_dt")
 refresh_time <- 60000
 ei_refresh_time <- 24 * 60 * 60 * 1000
-blotter_size_tracker <- 1
-message_count_trader <- 1
 
 #
 # Load portfolio status function

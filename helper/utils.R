@@ -21,6 +21,9 @@ UtilGetPortfolio <- function(){
     update_time <- Sys.time()
     holdings <- data.frame(Ticker = character(0), stringsAsFactors = FALSE)
     port_intrim <- data.frame(Ticker = character(0),
+                              Right = character(0),
+                              Expiry = character(0),
+                              Strike = character(0),
                               SecurityType = character(0),
                               Position = numeric(0),
                               Cost = numeric(0),
@@ -32,6 +35,9 @@ UtilGetPortfolio <- function(){
     
     us_cash <- ts_tmp$ts_us_cash_balance
     port_us_cash <- data.frame(Ticker = "USD",
+                               Right = "",
+                               Expiry = "",
+                               Strike = "",
                                SecurityType = "CASH",
                                Position = us_cash,
                                Cost = 0,
@@ -43,6 +49,9 @@ UtilGetPortfolio <- function(){
     
     ca_cash <- ts_tmp$ts_ca_cash_balance
     port_ca_cash <- data.frame(Ticker = "CAD",
+                               Right = "",
+                               Expiry = "",
+                               Strike = "",
                                SecurityType = "CASH",
                                Position = ca_cash,
                                Cost = 0,
@@ -55,7 +64,7 @@ UtilGetPortfolio <- function(){
     port <- dplyr::bind_rows(list(port_us_cash, port_ca_cash))  # Output 3
   } else {
     update_time <- port_prelim$TimeStamp[1]  # Output 1
-    port_prelim <- port_prelim[port_prelim$LocalTicker != "USD.CAD",]
+    port_prelim <- port_prelim[port_prelim$LocalTicker != "USD-CAD",]
     port_prelim$Ticker <- paste0(port_prelim$LocalTicker, "-", port_prelim$Currency)
     
     holdings <- port_prelim[,"Ticker"]  # Output 2
@@ -65,11 +74,14 @@ UtilGetPortfolio <- function(){
     port_prelim$Position <- port_prelim$Position
     port_prelim$MktVal <- port_prelim$Position * port_prelim$MktPrc
     
-    port_intrim <- port_prelim[,c("Ticker", "SecurityType", "Position", "Cost", "MktPrc", 
+    port_intrim <- port_prelim[,c("Ticker", "Right", "Expiry", "Strike", "SecurityType", "Position", "Cost", "MktPrc", 
                                   "MktVal", "UnrealizedPNL", "UnrealizedPNLPrc")]
     
     us_cash <- ts_tmp$ts_us_cash_balance
     port_us_cash <- data.frame(Ticker = "USD",
+                               Right = "0",
+                               Expiry = "",
+                               Strike = "0",
                                SecurityType = "CASH",
                                Position = us_cash,
                                Cost = 0,
@@ -81,6 +93,9 @@ UtilGetPortfolio <- function(){
     
     ca_cash <- ts_tmp$ts_ca_cash_balance
     port_ca_cash <- data.frame(Ticker = "CAD",
+                               Right = "0",
+                               Expiry = "",
+                               Strike = "0",
                                SecurityType = "CASH",
                                Position = ca_cash,
                                Cost = 0,
@@ -102,12 +117,12 @@ UtilGetPortfolio <- function(){
 #
 # Find current holding
 #
-UtilFindCurrentHolding <- function(ticker_with_current){
+UtilFindCurrentHolding <- function(ticker_with_currency, sec_type){
   port <- UtilGetPortfolio()$port
   if(nrow(port) == 0){
     pos <- 0
   } else {
-    holding <- port[port$Ticker == ticker_with_current,]
+    holding <- port[port$Ticker == ticker_with_currency & port$SecurityType == sec_type,]
     
     if(nrow(holding) == 0){
       pos <- 0
@@ -119,11 +134,22 @@ UtilFindCurrentHolding <- function(ticker_with_current){
 }
 
 #
+# Retrieve contract details
+#
+UtilGetContractDetails <- function(sym, cur = "", sec_type){
+  ts_tmp <- IBTradingSession$new(10, platform, acct)
+  res <- ts_tmp$TSGetContractDetails(sym, cur, sec_type)
+  ts_tmp$TSCloseTradingSession()
+  return(res)
+}
+
+#
 # Trade equity functions
 #
-UtilTradeEquityWithIB <- function(blotter){
+UtilTradeWithIB <- function(blotter){
   for(i in 1:nrow(blotter)){
     tik_with_crcy <- paste0(blotter[i,"LocalTicker"], "-", blotter[i,"Currency"])
+    sec_type <- blotter[i,"SecurityType"]
     side <- blotter[i,"Action"]
     trade_shares <- blotter[i,"Quantity"]
     transmit <- blotter[i,"TradeSwitch"]
@@ -131,7 +157,7 @@ UtilTradeEquityWithIB <- function(blotter){
     #
     # Check the current position
     #
-    curr_holding <- UtilFindCurrentHolding(tik_with_crcy)
+    curr_holding <- UtilFindCurrentHolding(tik_with_crcy, sec_type)
     if(side == "Buy"){
       expected_after_holding <- curr_holding + trade_shares
     } else {
@@ -143,16 +169,11 @@ UtilTradeEquityWithIB <- function(blotter){
     #
     # ts_static <<- TradingSession(22, platform, acct)
     ts_static$
-      TSSetTransmit(transmit)
-    
-    ts_static$
-      TSSetPrelimTradeList(blotter)
-    
-    ts_static$
-      TSGenFnlTradeList()
-    
-    ts_static$
+      TSSetTransmit(transmit)$
+      TSSetPrelimTradeList(blotter)$
+      TSGenFnlTradeList()$
       TSExecuteAllTrades()
+    
     curr_trd_id <- ts_static$ts_trade_ids[length(ts_static$ts_trade_ids)]
     print(curr_trd_id)
     err_msg <- ts_static$ts_last_trade_message[length(ts_static$ts_trade_ids)]
@@ -163,7 +184,7 @@ UtilTradeEquityWithIB <- function(blotter){
     #
     flag <- 0
     while(i <= 3){
-      actual_after_holding <- UtilFindCurrentHolding(tik_with_crcy)
+      actual_after_holding <- UtilFindCurrentHolding(tik_with_crcy, sec_type)
       ifelse(actual_after_holding == expected_after_holding, flag <- 1, flag <- 0)
       
       if(flag == 1){
@@ -185,10 +206,14 @@ UtilTradeEquityWithIB <- function(blotter){
       trade_res$Time <- trade_time
       trade_res$Result <- "Success"
       trade_res$TradeID <- curr_trd_id
+      trade_res$TradeMode <- acct
+      trade_res$ApplicationStatus <- app_sta
       trade_res <- trade_res[,c(ncol(trade_res),1:(ncol(trade_res)-1))]
       
       msg <- data.frame(Date = trade_date,
                         Time = trade_time,
+                        TradeMode = acct,
+                        ApplicationStatus = app_sta,
                         Msg = paste0("Trade (",curr_trd_id, ") ", tik_with_crcy, " is successfully traded (", side, ") at ",
                                      trade_date, " ", trade_time),
                         stringsAsFactors = FALSE)
@@ -200,10 +225,14 @@ UtilTradeEquityWithIB <- function(blotter){
       trade_res$Time <- trade_time
       trade_res$Result <- "Failed"
       trade_res$TradeID <- curr_trd_id
+      trade_res$TradeMode <- acct
+      trade_res$ApplicationStatus <- app_sta
       trade_res <- trade_res[,c(ncol(trade_res),1:(ncol(trade_res)-1))]
       
       msg <- data.frame(Date = trade_date,
                         Time = trade_time,
+                        TradeMode = acct,
+                        ApplicationStatus = app_sta,
                         Msg = paste0("Trade (",curr_trd_id, ") ", tik_with_crcy, " is not traded (", side, ") at ",
                                      trade_date, " ", trade_time),
                         stringsAsFactors = FALSE)

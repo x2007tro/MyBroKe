@@ -28,7 +28,7 @@ portfolio_tp <- tabPanel(
             ),
             
             shypka.ddiv(
-              actionButton(class = "btn-primary","add_trade_list_submit", "Add to blotter", width = "150px")
+              actionButton(class = "btn-primary","add_trade_list_submit", "Add to equity blotter", width = "150px")
             )
           )
         )
