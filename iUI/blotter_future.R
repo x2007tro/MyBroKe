@@ -1,7 +1,7 @@
 ##
-# Equity blotter tabPanel
-equity_blotter_tp <- tabPanel(
-  "Equity",
+# future blotter tabPanel
+future_blotter_tp <- tabPanel(
+  "Future",
   
   tabsetPanel(
     ##
@@ -17,17 +17,17 @@ equity_blotter_tp <- tabPanel(
           tags$div(
             style="display:block",
             
-            lapply(1:eq_max_blotter_size, function(i){
+            lapply(1:fut_max_blotter_size, function(i){
               fluidRow(
                 column(
                   12,
                   tags$div(
-                    style="display:block", uiOutput(paste0('eq_trade_item', i), inline = FALSE))
+                    style="display:block", uiOutput(paste0('fut_trade_item', i), inline = FALSE))
                 ))
             })
           )            
         )
-      ), # end of equity div
+      ),
       
       tags$div(style = "border:1px gray solid"),
       
@@ -41,11 +41,11 @@ equity_blotter_tp <- tabPanel(
             fluidRow(column(
               12,
               shypka.ddiv(tags$h4(tags$b("Active Orders"))),   # salmon
-              tags$div(textOutput("eq_current_active_trades")),
+              tags$div(textOutput("fut_current_active_trades")),
               tags$br(),
               tags$div(
                 id = "cancel_all_trades", 
-                actionButton(class = "btn-primary", "eq_cancel_all_trades", "Cancel All", width = blotter_field_default_width)
+                actionButton(class = "btn-primary", "fut_cancel_all_trades", "Cancel All", width = blotter_field_default_width)
               )
             ))
           )
@@ -63,8 +63,8 @@ equity_blotter_tp <- tabPanel(
           12, 
           tags$div(
             tags$h4(tags$b("Message")),
-            lapply(1:eq_max_message_count, function(i){
-              tags$div(style="display:block", textOutput(paste0('eq_message', i), inline = FALSE))
+            lapply(1:fut_max_message_count, function(i){
+              tags$div(style="display:block", textOutput(paste0('fut_message', i), inline = FALSE))
             })
           )
         )
@@ -75,7 +75,7 @@ equity_blotter_tp <- tabPanel(
     # Contract Details tabPanel
     tabPanel(
       "Contract Details",
-      DT::dataTableOutput("eq_cd")
+      DT::dataTableOutput("fut_cd")
     ),
     
     tabPanel(
@@ -86,7 +86,7 @@ equity_blotter_tp <- tabPanel(
           12,
           tags$br(),
           shypka.ddiv(
-            selectInput("eq_blotter_size_selector", tags$b("Slot Size"), choices = 1:10, selected = 1, width = blotter_field_default_width)
+            selectInput("fut_blotter_size_selector", tags$b("Slot Size"), choices = 1:10, selected = 1, width = blotter_field_default_width)
           )
         )
       )

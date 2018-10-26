@@ -4,6 +4,7 @@
 platform <- "IBG"     # Options: TWS, IBG
 acct <- "Paper"    # Options: Live, Paper
 app_sta <- "Test"
+trade_time_limit <- 10
 active_trade_ids <- c()
 brewed_colors <- rep(RColorBrewer::brewer.pal(n = 9, name = "Set1"), 100)
 
@@ -24,6 +25,12 @@ opt_max_blotter_size <- 10
 opt_max_message_count <- 3
 opt_blotter_size_tracker <- 1
 opt_message_count_trader <- 1
+
+# option blotter
+fut_max_blotter_size <- 10
+fut_max_message_count <- 3
+fut_blotter_size_tracker <- 1
+fut_message_count_trader <- 1
 
 # other
 econ_indi_panel_default_width <- 12
@@ -85,3 +92,8 @@ names(ei_quandl) <- master_lookup[master_lookup$APISource == "quandl","Key"]
 # Buy/Sell trading session
 #
 ts_static <- IBTradingSession$new(22, platform, acct)
+
+#
+# Test for Future and currency contract
+#
+cnt <- ts_static$TSGetContractDetails(sym = "AAPL", sec_typ = "future")

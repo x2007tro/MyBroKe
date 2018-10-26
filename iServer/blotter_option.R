@@ -20,19 +20,18 @@ observeEvent(input$opt_blotter_size_selector,{
   lapply(1:opt_blotter_size_tracker, function(i){
     output[[paste0('opt_trade_item',i)]] <- renderUI({
       list(
-        br(),
-        tags$div(class = "blotter_fields", textInput(paste0('opt_ticker',i), NULL, value = "", width = blotter_field_default_width, placeholder = "AAPL")),
-        tags$div(class = "blotter_fields", selectInput(paste0('opt_right',i), NULL, choices = c("C", "P"), width = blotter_field_default_width)),
-        tags$div(class = "blotter_fields_wide", selectInput(paste0('opt_expiry',i), NULL, choices = "", width = blotter_field_default_width)),
-        tags$div(class = "blotter_fields", selectInput(paste0('opt_strike',i), NULL, choices = "", width = blotter_field_default_width)),
-        tags$div(class = "blotter_fields", selectInput(paste0('opt_currency',i), NULL, choices = c("CAD","USD"), width = blotter_field_default_width)),
-        tags$div(class = "blotter_fields", selectInput(paste0('opt_side',i), NULL, choices = c("Buy", "Sell"), width = blotter_field_default_width)),
-        tags$div(class = "blotter_fields", numericInput(paste0('opt_shares',i), NULL, value = 0, min = 0, max = 1000,  width = blotter_field_default_width)),
-        tags$div(class = "blotter_fields", selectInput(paste0('opt_type',i), NULL, choices = c("Lmt", "Mkt"), width = blotter_field_default_width)),
-        tags$div(class = "blotter_fields", numericInput(paste0('opt_limit_price',i), NULL, value = 1, min = 0, max = 1000,  width = blotter_field_default_width)),
-        tags$div(class = "blotter_fields", numericInput(paste0('opt_multiplier',i), NULL, value = 100, min = 100, max = 100,  width = blotter_field_default_width)),
-        tags$div(class = "blotter_fields", textInput(paste0('opt_trade_value',i), NULL, value = "0", width = blotter_field_default_width)),
-        tags$div(class = "blotter_fields", checkboxInput(paste0('opt_transmit',i), NULL, value = FALSE, width = blotter_field_default_width)),
+        tags$div(class = "blotter_fields", textInput(paste0('opt_ticker',i), "Symbol", value = "", width = blotter_field_default_width, placeholder = "AAPL")),
+        tags$div(class = "blotter_fields", selectInput(paste0('opt_right',i), "Right", choices = c("C", "P"), width = blotter_field_default_width)),
+        tags$div(class = "blotter_fields_wide", selectInput(paste0('opt_expiry',i), "Expiry", choices = "", width = blotter_field_default_width)),
+        tags$div(class = "blotter_fields", selectInput(paste0('opt_strike',i), "Strike", choices = "", width = blotter_field_default_width)),
+        tags$div(class = "blotter_fields", selectInput(paste0('opt_currency',i), "Currency", choices = c("CAD","USD"), width = blotter_field_default_width)),
+        tags$div(class = "blotter_fields", selectInput(paste0('opt_side',i), "Side", choices = c("Buy", "Sell"), width = blotter_field_default_width)),
+        tags$div(class = "blotter_fields", numericInput(paste0('opt_shares',i), "Shares", value = 0, min = 0, max = 1000,  width = blotter_field_default_width)),
+        tags$div(class = "blotter_fields", selectInput(paste0('opt_type',i), "Type", choices = c("Lmt", "Mkt"), width = blotter_field_default_width)),
+        tags$div(class = "blotter_fields", numericInput(paste0('opt_limit_price',i), "Limit Price", value = 1, min = 0, max = 1000,  width = blotter_field_default_width)),
+        tags$div(class = "blotter_fields", numericInput(paste0('opt_multiplier',i), "Multiplier", value = 100, min = 100, max = 100,  width = blotter_field_default_width)),
+        tags$div(class = "blotter_fields", textInput(paste0('opt_trade_value',i), "Trade Value", value = "0", width = blotter_field_default_width)),
+        tags$div(class = "blotter_fields", checkboxInput(paste0('opt_transmit',i), "Transmit", value = FALSE, width = blotter_field_default_width)),
         tags$div(class = "blotter_fields_wide", actionButton(class = "btn-primary", paste0('opt_reqc',i), "Request", width = blotter_field_default_width)),
         tags$div(class = "blotter_fields_wide", actionButton(class = "btn-primary", paste0('opt_trade',i), "Trade", width = blotter_field_default_width))
       )

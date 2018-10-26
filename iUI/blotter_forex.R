@@ -11,22 +11,20 @@ forex_blotter_tp <- tabPanel(
       tags$br(),
       tags$div(
         style="display:block",
-        tags$div(class = "blotter_fields_wide", "Target Currency"),
-        tags$div(class = "blotter_fields_wide", "Target Value"),
-        tags$div(class = "blotter_fields", "Transmit"),
-        tags$div(class = "blotter_fields_wide", "Required Currency"),
-        tags$div(class = "blotter_fields_wide", "Required Value"),
-        br(), br(),
         fluidRow(
           column(
             12,
-            tags$div(class = "blotter_fields_wide", selectInput("tgt_curr", NULL, choices = c("USD", "CAD"), width = blotter_field_default_width_wide)),
-            tags$div(class = "blotter_fields_wide", numericInput("tgt_val", NULL, 100, width = blotter_field_default_width_wide)),
-            tags$div(class = "blotter_fields", checkboxInput('forex_trade_transmit', NULL, value = FALSE, width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields_wide", textInput("req_curr", NULL, value = "CAD", width = blotter_field_default_width_wide)),
-            tags$div(class = "blotter_fields_wide", textInput("req_val", NULL, value = "0", width = blotter_field_default_width_wide)),
+            tags$div(class = "blotter_fields_wide", selectInput("tgt_curr", "Target Currency", choices = c("USD", "CAD"), width = blotter_field_default_width_wide)),
+            tags$div(class = "blotter_fields_wide", numericInput("tgt_val", "Target Value", 100, width = blotter_field_default_width_wide)),
+            tags$div(class = "blotter_fields_wide", textInput("req_curr", "Required Currency", value = "CAD", width = blotter_field_default_width_wide)),
+            tags$div(class = "blotter_fields_wide", textInput("req_val", "Required Value", value = "0", width = blotter_field_default_width_wide)),
+            tags$div(class = "blotter_fields", checkboxInput('forex_trade_transmit', "Transmit", value = FALSE, width = blotter_field_default_width)),
             tags$div(
-              class = "blotter_fields", 
+              class = "blotter_fields_wide", 
+              actionButton(class="btn-primary", "request_forex", "Request", width = blotter_field_default_width)
+            ),
+            tags$div(
+              class = "blotter_fields_wide", 
               actionButton(class="btn-primary", "trade_forex", "Trade", width = blotter_field_default_width)
             )
           ))
@@ -48,6 +46,14 @@ forex_blotter_tp <- tabPanel(
           )
         )
       )
+    ),
+    
+    ##
+    # Contract Details tabPanel
+    tabPanel(
+      "Contract Details",
+      DT::dataTableOutput("forex_cd")
     )
+    
   )
 )

@@ -1,7 +1,7 @@
 ##
 # Option blotter tabPanel
 option_blotter_tp <- tabPanel(
-  "Option",
+  "Vanilla Option",
   
   tabsetPanel(
     ##
@@ -15,37 +15,29 @@ option_blotter_tp <- tabPanel(
         column(
           12,
           tags$div(
-            fluidRow(
-              column(
-                12,
-                tags$div(
-                  style="display:block",
-                  tags$div(class = "blotter_fields", "IB Symbol"),
-                  tags$div(class = "blotter_fields", "Right"),
-                  tags$div(class = "blotter_fields_wide", "Expiry"),
-                  tags$div(class = "blotter_fields", "Strike"),
-                  tags$div(class = "blotter_fields", "Currency"),
-                  tags$div(class = "blotter_fields", "Side"),
-                  tags$div(class = "blotter_fields", "Shares"),
-                  tags$div(class = "blotter_fields", "Type"),
-                  tags$div(class = "blotter_fields", "Limit Price"),
-                  tags$div(class = "blotter_fields", "Multiplier"),
-                  tags$div(class = "blotter_fields", "Trade Value"),
-                  tags$div(class = "blotter_fields", "Transmit"),
-                  br(),
-                  
-                  lapply(1:opt_max_blotter_size, function(i){
-                    fluidRow(
-                      column(
-                        12,
-                        tags$div(
-                          style="display:block", uiOutput(paste0('opt_trade_item', i), inline = FALSE))
-                      ))
-                  })
-                )            
-              )
-            )
-          )
+            style="display:block",
+            # tags$div(class = "blotter_fields", "IB Symbol"),
+            # tags$div(class = "blotter_fields", "Right"),
+            # tags$div(class = "blotter_fields_wide", "Expiry"),
+            # tags$div(class = "blotter_fields", "Strike"),
+            # tags$div(class = "blotter_fields", "Currency"),
+            # tags$div(class = "blotter_fields", "Side"),
+            # tags$div(class = "blotter_fields", "Shares"),
+            # tags$div(class = "blotter_fields", "Type"),
+            # tags$div(class = "blotter_fields", "Limit Price"),
+            # tags$div(class = "blotter_fields", "Multiplier"),
+            # tags$div(class = "blotter_fields", "Trade Value"),
+            # tags$div(class = "blotter_fields", "Transmit"),
+            
+            lapply(1:opt_max_blotter_size, function(i){
+              fluidRow(
+                column(
+                  12,
+                  tags$div(
+                    style="display:block", uiOutput(paste0('opt_trade_item', i), inline = FALSE))
+                ))
+            })
+          )            
         )
       ), # end of equity div
       

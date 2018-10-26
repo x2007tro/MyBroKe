@@ -33,14 +33,59 @@ observeEvent({
 })
 
 #
+# Handling equity contract request
+#
+observeEvent(input$request_forex, {
+  
+  withProgress(message = 'Retrieving contract details ...', {
+    res <- UtilGetContractDetails(sym = input$tgt_curr, sec_type = "forex")
+  })
+  
+  # Render contract details
+  output$forex_cd <- DT::renderDataTable({
+    DT::datatable(
+      res, 
+      options = list(
+        pageLength = 20,
+        orderClasses = TRUE,
+        searching = TRUE,
+        paging = TRUE
+      ) 
+    ) %>%
+      DT::formatStyle(
+        c("Currency"),
+        fontWeight = "bold",
+        #color = "white",
+        color = DT::styleEqual(
+          unique(res$Currency),
+          brewed_colors[1:length(unique(res$Currency))]
+        )
+      )
+  })
+  
+})
+
+#
 # handling forex trade
 #
 observeEvent(input$trade_forex, {
-  blotter <- data.frame(TargetCurrency = input$tgt_curr,
-                        TargetValue = input$tgt_val,
-                        SecurityType = "Forex",
+  blotter <- data.frame(LocalTicker = input$tgt_curr,
+                        Right = "",
+                        Expiry = "",
+                        Strike = 0,
+                        Exchange = "",
+                        Action = "",
+                        Quantity = input$tgt_val,
+                        OrderType = "",
+                        LimitPrice = 0,
+                        SecurityType = "FOREX",
+                        Currency = input$req_curr,
                         TradeSwitch = input$forex_trade_transmit,
                         stringsAsFactors = FALSE)
-  res <- UtilTradeForexWithIB(blotter)
+  
+  withProgress(message = 'Trading in progress ...', {
+    res <- UtilTradeForexWithIB(blotter)
+  })
+  
   updateTextInput(session, "forex_trade_msg", value = res)
 })

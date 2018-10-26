@@ -24,6 +24,11 @@ mainServer <- function(input, output, session) {
   source("./iServer/blotter_option.R", local = TRUE)
   
   ##
+  # future
+  ##
+  source("./iServer/blotter_future.R", local = TRUE)
+  
+  ##
   # Watchlist
   ##
   source("./iServer/watchlist.R", local = TRUE)

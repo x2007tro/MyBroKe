@@ -20,16 +20,15 @@ observeEvent(input$eq_blotter_size_selector,{
   lapply(1:eq_blotter_size_tracker, function(i){
     output[[paste0('eq_trade_item',i)]] <- renderUI({
       list(
-        br(),
-        tags$div(class = "blotter_fields", textInput(paste0('eq_ticker',i), NULL, value = "", width = blotter_field_default_width, placeholder = "AAPL")),
-        tags$div(class = "blotter_fields_wide", selectInput(paste0('eq_exch',i), NULL, choices = c("TSE", "NASDAQ", "NYSE"), width = blotter_field_default_width)),
-        tags$div(class = "blotter_fields", selectInput(paste0('eq_currency',i), NULL, choices = c("CAD","USD"), width = blotter_field_default_width)),
-        tags$div(class = "blotter_fields", selectInput(paste0('eq_side',i), NULL, choices = c("Buy", "Sell"), width = blotter_field_default_width)),
-        tags$div(class = "blotter_fields", numericInput(paste0('eq_shares',i), NULL, value = 0, min = 0, max = 1000,  width = blotter_field_default_width)),
-        tags$div(class = "blotter_fields", selectInput(paste0('eq_type',i), NULL, choices = c("Lmt", "Mkt"), width = blotter_field_default_width)),
-        tags$div(class = "blotter_fields", numericInput(paste0('eq_limit_price',i), NULL, value = 1, min = 0, max = 1000,  width = blotter_field_default_width)),
-        tags$div(class = "blotter_fields", textInput(paste0('eq_trade_value',i), NULL, value = "0", width = blotter_field_default_width)),
-        tags$div(class = "blotter_fields", checkboxInput(paste0('eq_transmit',i), NULL, value = FALSE, width = blotter_field_default_width)),
+        tags$div(class = "blotter_fields", textInput(paste0('eq_ticker',i), "Symbol", value = "", width = blotter_field_default_width, placeholder = "AAPL")),
+        tags$div(class = "blotter_fields_wide", selectInput(paste0('eq_exch',i), "Exchange", choices = c("TSE", "NASDAQ", "NYSE"), width = blotter_field_default_width)),
+        tags$div(class = "blotter_fields", selectInput(paste0('eq_currency',i), "Currency", choices = c("CAD","USD"), width = blotter_field_default_width)),
+        tags$div(class = "blotter_fields", selectInput(paste0('eq_side',i), "Side", choices = c("Buy", "Sell"), width = blotter_field_default_width)),
+        tags$div(class = "blotter_fields", numericInput(paste0('eq_shares',i), "Shares", value = 0, min = 0, max = 1000,  width = blotter_field_default_width)),
+        tags$div(class = "blotter_fields", selectInput(paste0('eq_type',i), "Type", choices = c("Lmt", "Mkt"), width = blotter_field_default_width)),
+        tags$div(class = "blotter_fields", numericInput(paste0('eq_limit_price',i), "Limit Price", value = 1, min = 0, max = 1000,  width = blotter_field_default_width)),
+        tags$div(class = "blotter_fields", textInput(paste0('eq_trade_value',i), "Trade Value", value = "0", width = blotter_field_default_width)),
+        tags$div(class = "blotter_fields", checkboxInput(paste0('eq_transmit',i), "Transmit", value = FALSE, width = blotter_field_default_width)),
         tags$div(class = "blotter_fields_wide", actionButton(class = "btn-primary", paste0('eq_reqc',i), "Request", width = blotter_field_default_width)),
         tags$div(class = "blotter_fields_wide", actionButton(class = "btn-primary", paste0('eq_trade',i), "Trade", width = blotter_field_default_width))
       )
@@ -126,7 +125,7 @@ lapply(1:eq_max_blotter_size, function(i){
                           Quantity = input[[paste0('eq_shares',i)]],
                           OrderType = input[[paste0('eq_type',i)]],
                           LimitPrice = input[[paste0('eq_limit_price',i)]],
-                          SecurityType = "STK",
+                          SecurityType = "STK",       # this should match the security name provided by IB
                           Currency = input[[paste0('eq_currency',i)]],
                           TradeSwitch = input[[paste0('eq_transmit',i)]],
                           stringsAsFactors = FALSE)

@@ -170,20 +170,19 @@ UtilTradeWithIB <- function(blotter){
     # ts_static <<- TradingSession(22, platform, acct)
     ts_static$
       TSSetTransmit(transmit)$
-      TSSetPrelimTradeList(blotter)$
+      TSSetPrelimTradeList(blotter[i,])$
       TSGenFnlTradeList()$
       TSExecuteAllTrades()
     
     curr_trd_id <- ts_static$ts_trade_ids[length(ts_static$ts_trade_ids)]
     print(curr_trd_id)
     err_msg <- ts_static$ts_last_trade_message[length(ts_static$ts_trade_ids)]
-    # TSCloseTradingSession(ts_static)
     
     #
     # Run a loop to check if the trade is sucessful
     #
     flag <- 0
-    while(i <= 3){
+    while(i <= trade_time_limit){
       actual_after_holding <- UtilFindCurrentHolding(tik_with_crcy, sec_type)
       ifelse(actual_after_holding == expected_after_holding, flag <- 1, flag <- 0)
       
@@ -214,7 +213,7 @@ UtilTradeWithIB <- function(blotter){
                         Time = trade_time,
                         TradeMode = acct,
                         ApplicationStatus = app_sta,
-                        Msg = paste0("Trade (",curr_trd_id, ") ", tik_with_crcy, " is successfully traded (", side, ") at ",
+                        Msg = paste0(sec_type, " trade (",curr_trd_id, ") ", tik_with_crcy, " is successfully traded (", side, ") at ",
                                      trade_date, " ", trade_time),
                         stringsAsFactors = FALSE)
     } else {
@@ -233,7 +232,7 @@ UtilTradeWithIB <- function(blotter){
                         Time = trade_time,
                         TradeMode = acct,
                         ApplicationStatus = app_sta,
-                        Msg = paste0("Trade (",curr_trd_id, ") ", tik_with_crcy, " is not traded (", side, ") at ",
+                        Msg = paste0(sec_type, " Trade (",curr_trd_id, ") ", tik_with_crcy, " is not traded (", side, ") at ",
                                      trade_date, " ", trade_time),
                         stringsAsFactors = FALSE)
     }
@@ -242,28 +241,33 @@ UtilTradeWithIB <- function(blotter){
   return(list(trade_rec = trade_res, msg_rec = msg))
 }
 
-# blotter <- data.frame(LocalTicker = "GOOGL",
-#                       Action = "Buy",
-#                       Quantity = 10,
-#                       OrderType = "Mkt",
-#                       LimitPrice = 20,
-#                       SecurityType = "Stk",
-#                       Currency = "USD",
-#                       TradeSwitch = TRUE,
-#                       stringsAsFactors = FALSE)
-# res <- UtilTradeEquityWithIB(blotter)
+blotter <- data.frame(LocalTicker = "BMO",
+                      Right = "",
+                      Expiry = "",
+                      Strike = "",
+                      Exchange = "TSE",
+                      Action = "Buy",
+                      Quantity = 10,
+                      OrderType = "Mkt",
+                      LimitPrice = 20,
+                      SecurityType = "STK",
+                      Currency = "CAD",
+                      TradeSwitch = TRUE,
+                      stringsAsFactors = FALSE)
+res <- UtilTradeWithIB(blotter)
 
 #
 # Trade forex functions
 #
 UtilTradeForexWithIB <- function(blotter){
+
   for(i in 1:nrow(blotter)){
-    curr_us_balance <- UtilFindCurrentHolding("USD")
-    curr_ca_balance <- UtilFindCurrentHolding("CAD")
+    curr_us_balance <- UtilFindCurrentHolding("USD", "CASH")
+    curr_ca_balance <- UtilFindCurrentHolding("CAD", "CASH")
     
     transmit <- blotter[i,"TradeSwitch"]
-    tgt_curr <- blotter[,"TargetCurrency"]
-    tgt_value <- blotter[,"TargetValue"]
+    tgt_curr <- blotter[,"LocalTicker"]
+    tgt_value <- blotter[,"Quantity"]
     
     if(tgt_curr == "USD"){
       expected_us_balance <- curr_us_balance + tgt_value
@@ -271,30 +275,36 @@ UtilTradeForexWithIB <- function(blotter){
       # ts_static <<- TradingSession(22, platform, acct)
       ts_static$
         TSSetTransmit(transmit)$
-        TSExecuteTrade(blotter[i,])
+        TSSetPrelimTradeList(blotter[i,])$
+        TSGenFnlTradeList()$
+        TSExecuteAllTrades()
       
-      actual_us_balance <- UtilFindCurrentHolding("USD")
+      actual_us_balance <- UtilFindCurrentHolding("USD", "CASH")
       
       if(actual_us_balance >= expected_us_balance) {
         res <- "Successful"
       } else {
-        res <-"Failed"
+        res <- "Failed"
       }
-    } else {
+    } else if (tgt_curr == "CAD") {
       expected_ca_balance <- curr_ca_balance + tgt_value - 5   # Account for exchange rate rounding
       
       # ts_static <<- TradingSession(22, platform, acct)
       ts_static$
-        TSSetTransmit(transmit)     
-        TSExecuteTrade(blotter[i,])
+        TSSetTransmit(transmit)$
+        TSSetPrelimTradeList(blotter[i,])$
+        TSGenFnlTradeList()$
+        TSExecuteAllTrades()
       
-      actual_ca_balance <- UtilFindCurrentHolding("CAD")
+      actual_ca_balance <- UtilFindCurrentHolding("CAD", "CASH")
       
       if(actual_ca_balance >= expected_ca_balance){
-        res = "Successful"
+        res <- "Successful"
       } else {
-        res= "Failed"
+        res <- "Failed"
       }
+    } else {
+      res <- paste0("Currency ", tgt_curr, " is currently not supported!")
     }
   }
   return(res)
