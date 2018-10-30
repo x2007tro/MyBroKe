@@ -54,6 +54,11 @@ mainServer <- function(input, output, session) {
   source("./iServer/account.R", local = TRUE)
   
   ##
+  # account
+  ##
+  source("./iServer/download.R", local = TRUE)
+  
+  ##
   # trade history
   ##
   source("./iServer/trade_hist.R", local = TRUE)

@@ -39,21 +39,6 @@ refresh_time <- 60000
 ei_refresh_time <- 24 * 60 * 60 * 1000
 
 #
-# Load portfolio status function
-#
-if(R.Version()$os == "linux-gnu"){
-  github_folder <- "/home/kmin/Projects/"
-} else {
-  github_folder <- "c:/Github/"
-}
-
-source(paste0(github_folder,"IBTWSTradingSession/IB_TWS_TradingSession.R"))
-source(paste0(github_folder,"FinancialSecurityHistoricalData/FinancialSecurityHistoricalData.R"))
-source(paste0(github_folder,"EconomicIndicators/EconomicIndicators.R"))
-source(paste0(github_folder,"Utils/R/shypka.R"))
-source(paste0(github_folder,"Utils/R/ggpthemepka.R"))
-
-#
 # connection for database
 #
 db_obj <- list(
@@ -62,6 +47,10 @@ db_obj <- list(
   id = "kmin",
   pwd = "yuheng"
 )
+
+##
+# Obtain tradable currencies from DB
+tradable_curr <- unique(ReadDataFromSS(db_obj, "MyBroKe_CashBalanceMap")$Currency)
 
 #
 # Load API keys
@@ -89,7 +78,21 @@ ei_quandl <- master_lookup[master_lookup$APISource == "quandl","Item"]
 names(ei_quandl) <- master_lookup[master_lookup$APISource == "quandl","Key"]
 
 #
+# Load portfolio status function
+#
+if(R.Version()$os == "linux-gnu"){
+  github_folder <- "/home/kmin/Projects/"
+} else {
+  github_folder <- "c:/Github/"
+}
+
+source(paste0(github_folder,"IBTWSTradingSession/IB_TWS_TradingSession.R"))
+source(paste0(github_folder,"FinancialSecurityHistoricalData/FinancialSecurityHistoricalData.R"))
+source(paste0(github_folder,"EconomicIndicators/EconomicIndicators.R"))
+source(paste0(github_folder,"Utils/R/shypka.R"))
+source(paste0(github_folder,"Utils/R/ggpthemepka.R"))
+
+#
 # Buy/Sell trading session
 #
 ts_static <- IBTradingSession$new(22, platform, acct)
-tradable_curr <- unique(ReadDataFromSS(db_obj, "MyBroKe_CashBalanceMap")$Currency)

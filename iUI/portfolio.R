@@ -24,15 +24,7 @@ portfolio_tp <- tabPanel(
             ),
             
             shypka.ddiv(
-              selectInput("eq_symbol_add_trade_list", NULL, choices = c("AAPL"), width = "150px")
-            ),
-            
-            shypka.ddiv(
-              selectInput("eq_currency_add_trade_list", NULL, choices = c("CAD"), width = "150px")
-            ),
-            
-            shypka.ddiv(
-              actionButton(class = "btn-primary","add_trade_list_submit", "Add to equity blotter", width = "150px")
+              actionButton(class = "btn-primary","add_trade_list_submit", "Add to blotter", width = "150px")
             )
           )
         )
