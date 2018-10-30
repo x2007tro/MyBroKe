@@ -6,7 +6,7 @@ acct <- "Paper"    # Options: Live, Paper
 app_sta <- "Test"
 trade_time_limit <- 10
 active_trade_ids <- c()
-brewed_colors <- rep(RColorBrewer::brewer.pal(n = 9, name = "Set1"), 100)
+brewed_colors <- rep(RColorBrewer::brewer.pal(n = 9, name = "Set3"), 100)
 
 #
 # Common parameters for server and ui
@@ -92,8 +92,4 @@ names(ei_quandl) <- master_lookup[master_lookup$APISource == "quandl","Key"]
 # Buy/Sell trading session
 #
 ts_static <- IBTradingSession$new(22, platform, acct)
-
-#
-# Test for Future and currency contract
-#
-cnt <- ts_static$TSGetContractDetails(sym = "AAPL", sec_typ = "future")
+tradable_curr <- unique(ReadDataFromSS(db_obj, "MyBroKe_CashBalanceMap")$Currency)

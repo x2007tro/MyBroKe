@@ -2,11 +2,11 @@
 # Portfolio tabpanel
 ##
 portfolio_tp <- tabPanel(
-  "Porfolio",
+  "Holding",
   
   tabsetPanel(
     tabPanel(
-      "Holdings",
+      "Securities ex. Forex",
       
       fluidRow(
         column(
@@ -16,15 +16,19 @@ portfolio_tp <- tabPanel(
             
             shypka.ddiv(tags$h5(
               style = "padding:4px",
-              textOutput("last_update_time")
+              textOutput("last_update_time_nonforex")
             ), color = "#ffe4e1"),    #misty rose
             
             shypka.ddiv(
-              DT::dataTableOutput("portfolio_dt")
+              DT::dataTableOutput("portfolio_holding_nonforex")
             ),
             
             shypka.ddiv(
-              selectInput("add_trade_list", NULL, choices = c("CAD"), width = "150px")
+              selectInput("eq_symbol_add_trade_list", NULL, choices = c("AAPL"), width = "150px")
+            ),
+            
+            shypka.ddiv(
+              selectInput("eq_currency_add_trade_list", NULL, choices = c("CAD"), width = "150px")
             ),
             
             shypka.ddiv(
@@ -32,9 +36,45 @@ portfolio_tp <- tabPanel(
             )
           )
         )
-      )
+      )  
+    ),  # end of nonforex security
+    
+    tabPanel(
+      "Forex",
       
-    )
+      fluidRow(
+        column(
+          12,
+          shypka.ddiv(tags$h5(
+            style = "padding:4px",
+            textOutput("last_update_time_forex")
+          ), color = "#ffe4e1"),    #misty rose
+          
+          shypka.ddiv(
+            DT::dataTableOutput("portfolio_holding_forex")
+          )
+        )
+      )
+    ), # end of forex
+    
+    tabPanel(
+      "Cash",
+      
+      fluidRow(
+        column(
+          12,
+          shypka.ddiv(tags$h5(
+            style = "padding:4px",
+            textOutput("last_update_time_cashbal")
+          ), color = "#ffe4e1"),    #misty rose
+          
+          shypka.ddiv(
+            DT::dataTableOutput("portfolio_cash_balance")
+          )
+        )
+      )
+    ) # end of cash balance
+    
   )
   
 )

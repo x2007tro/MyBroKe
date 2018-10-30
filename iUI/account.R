@@ -1,21 +1,32 @@
 ##
 # Account tab
 account_tp <- tabPanel(
-  "Balance",
+  "Account",
   
   tabsetPanel(
     
     tabPanel(
-      "Snapshot",
+      "Balance Reconciliation",
       
       fluidRow(
         column(
           12,
-          tags$div(DT::dataTableOutput("account_snapshot"))
+          tags$div(DT::dataTableOutput("account_recon"))
         )
       )
-    )
-    # end of panel 1
+    ), # end of panel 1
+    
+    tabPanel(
+      "Raw Metrics",
+      
+      fluidRow(
+        column(
+          12,
+          tags$div(DT::dataTableOutput("raw_metrics"))
+        )
+      )
+    ) # end of panel 1
+
   ) # end of tabset panel
               
   

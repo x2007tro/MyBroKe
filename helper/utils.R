@@ -9,120 +9,26 @@ UtilGetPortfolio <- function(){
   ts_tmp <- IBTradingSession$new(11, platform, acct)
   ts_tmp$
     TSSetTransmit(FALSE)$                       #Prevert trade from actually happening
-    TSUpdatePortHoldings()$
-    TSUpdatePortInfo()$
+    TSUpdateAccountDetail()$
     TSCloseTradingSession()
-
-  port_prelim <- ts_tmp$TSGetPortHoldings()
-  forex <- ts_tmp$ts_exchange_rate
-  acct_info <- ts_tmp$TSGetPortInfo()
   
-  if(nrow(port_prelim) == 0){
-    update_time <- Sys.time()
-    holdings <- data.frame(Ticker = character(0), stringsAsFactors = FALSE)
-    port_intrim <- data.frame(Ticker = character(0),
-                              Right = character(0),
-                              Expiry = character(0),
-                              Strike = character(0),
-                              SecurityType = character(0),
-                              Position = numeric(0),
-                              Cost = numeric(0),
-                              MktPrc = numeric(0),
-                              MktVal = numeric(0),
-                              UnrealizedPNL = numeric(0),
-                              UnrealizedPNLPrc = numeric(0),
-                              stringsAsFactors = FALSE)
-    
-    us_cash <- ts_tmp$ts_us_cash_balance
-    port_us_cash <- data.frame(Ticker = "USD",
-                               Right = "",
-                               Expiry = "",
-                               Strike = "",
-                               SecurityType = "CASH",
-                               Position = us_cash,
-                               Cost = 0,
-                               MktPrc =  us_cash * forex,
-                               MktVal = numeric(0),
-                               UnrealizedPNL = 0,
-                               UnrealizedPNLPrc = 0,
-                               stringsAsFactors = FALSE)
-    
-    ca_cash <- ts_tmp$ts_ca_cash_balance
-    port_ca_cash <- data.frame(Ticker = "CAD",
-                               Right = "",
-                               Expiry = "",
-                               Strike = "",
-                               SecurityType = "CASH",
-                               Position = ca_cash,
-                               Cost = 0,
-                               MktPrc = ca_cash,
-                               MktVal = numeric(0),
-                               UnrealizedPNL = 0,
-                               UnrealizedPNLPrc = 0,
-                               stringsAsFactors = FALSE)
-    
-    port <- dplyr::bind_rows(list(port_us_cash, port_ca_cash))  # Output 3
-  } else {
-    update_time <- port_prelim$TimeStamp[1]  # Output 1
-    port_prelim <- port_prelim[port_prelim$LocalTicker != "USD-CAD",]
-    port_prelim$Ticker <- paste0(port_prelim$LocalTicker, "-", port_prelim$Currency)
-    
-    holdings <- port_prelim[,"Ticker"]  # Output 2
-    
-    port_prelim$UnrealizedPNLPrc <- port_prelim$UnrealizedPNL/(port_prelim$Position*port_prelim$AvgCost)
-    port_prelim$Cost <- port_prelim$AvgCost
-    port_prelim$Position <- port_prelim$Position
-    port_prelim$MktVal <- port_prelim$Position * port_prelim$MktPrc
-    
-    port_intrim <- port_prelim[,c("Ticker", "Right", "Expiry", "Strike", "SecurityType", "Position", "Cost", "MktPrc", 
-                                  "MktVal", "UnrealizedPNL", "UnrealizedPNLPrc")]
-    
-    us_cash <- ts_tmp$ts_us_cash_balance
-    port_us_cash <- data.frame(Ticker = "USD",
-                               Right = "0",
-                               Expiry = "",
-                               Strike = "0",
-                               SecurityType = "CASH",
-                               Position = us_cash,
-                               Cost = 0,
-                               MktPrc = forex,
-                               MktVal = us_cash,
-                               UnrealizedPNL = 0,
-                               UnrealizedPNLPrc = 0,
-                               stringsAsFactors = FALSE)
-    
-    ca_cash <- ts_tmp$ts_ca_cash_balance
-    port_ca_cash <- data.frame(Ticker = "CAD",
-                               Right = "0",
-                               Expiry = "",
-                               Strike = "0",
-                               SecurityType = "CASH",
-                               Position = ca_cash,
-                               Cost = 0,
-                               MktPrc = 1,
-                               MktVal = ca_cash,
-                               UnrealizedPNL = 0,
-                               UnrealizedPNLPrc = 0,
-                               stringsAsFactors = FALSE)
-    
-    port <- dplyr::bind_rows(list(port_intrim, port_us_cash, port_ca_cash))  # Output 3
-  }
-  
-  return(list(update_datetime = update_time,
-              holdings = holdings,
-              portfolio = port,
-              acctInfo = acct_info))
+  return(list(update_datetime = Sys.time(),
+              holdings_nonforex = ts_tmp$ts_port_holdings_nonforex %>% dplyr::mutate(UnrealizedPNLPrc = MktPrc/Cost - 1),
+              holdings_forex = ts_tmp$ts_port_holdings_forex %>% dplyr::mutate(UnrealizedPNLPrc = MktPrc/Cost - 1),
+              port_into = ts_tmp$ts_port_info,
+              cash_balance = ts_tmp$ts_cash_balance,
+              ts_acc_recon = ts_tmp$ts_acc_recon %>% dplyr::select(-MarketDatetime)))
 }
 
 #
 # Find current holding
 #
-UtilFindCurrentHolding <- function(ticker_with_currency, sec_type){
-  port <- UtilGetPortfolio()$port
+UtilFindCurrentHolding <- function(ticker, curr, sec_type){
+  port <- UtilGetPortfolio()$holdings_nonforex
   if(nrow(port) == 0){
     pos <- 0
   } else {
-    holding <- port[port$Ticker == ticker_with_currency & port$SecurityType == sec_type,]
+    holding <- port %>% dplyr::filter(LocalTicker == ticker & Currency == curr & SecurityType == sec_type)
     
     if(nrow(holding) == 0){
       pos <- 0
@@ -130,7 +36,26 @@ UtilFindCurrentHolding <- function(ticker_with_currency, sec_type){
       pos <- holding[,"Position"]
     }
   }
-  
+  return(pos)
+}
+
+#
+# Find current holding
+#
+UtilFindCashBalance <- function(currency){
+  port <- UtilGetPortfolio()$cash_balance
+  if(nrow(port) == 0){
+    pos <- 0
+  } else {
+    cash <- port %>% dplyr::filter(Currency == currency)
+    
+    if(nrow(cash) == 0){
+      pos <- 0
+    } else {
+      pos <- cash[,"Balance"]
+    }
+  }
+  return(pos)
 }
 
 #
@@ -148,49 +73,81 @@ UtilGetContractDetails <- function(sym, cur = "", sec_type){
 #
 UtilTradeWithIB <- function(blotter){
   for(i in 1:nrow(blotter)){
-    tik_with_crcy <- paste0(blotter[i,"LocalTicker"], "-", blotter[i,"Currency"])
+    ticker <- blotter[i,"LocalTicker"]
+    curr <- blotter[i,"Currency"]
     sec_type <- blotter[i,"SecurityType"]
     side <- blotter[i,"Action"]
     trade_shares <- blotter[i,"Quantity"]
     transmit <- blotter[i,"TradeSwitch"]
     
-    #
-    # Check the current position
-    #
-    curr_holding <- UtilFindCurrentHolding(tik_with_crcy, sec_type)
-    if(side == "Buy"){
-      expected_after_holding <- curr_holding + trade_shares
-    } else {
-      expected_after_holding <- curr_holding - trade_shares
-    }
-    
-    #
-    # Trade
-    #
-    # ts_static <<- TradingSession(22, platform, acct)
-    ts_static$
-      TSSetTransmit(transmit)$
-      TSSetPrelimTradeList(blotter[i,])$
-      TSGenFnlTradeList()$
-      TSExecuteAllTrades()
-    
-    curr_trd_id <- ts_static$ts_trade_ids[length(ts_static$ts_trade_ids)]
-    print(curr_trd_id)
-    err_msg <- ts_static$ts_last_trade_message[length(ts_static$ts_trade_ids)]
-    
-    #
-    # Run a loop to check if the trade is sucessful
-    #
-    flag <- 0
-    while(i <= trade_time_limit){
-      actual_after_holding <- UtilFindCurrentHolding(tik_with_crcy, sec_type)
-      ifelse(actual_after_holding == expected_after_holding, flag <- 1, flag <- 0)
+    if(sec_type == "FOREX"){
+      transmit <- blotter[i,"TradeSwitch"]
+      tgt_curr <- blotter[,"LocalTicker"]
+      tgt_value <- blotter[,"Quantity"]
+      curr_balance <- UtilFindCashBalance(tgt_curr)
       
-      if(flag == 1){
-        break
+      expected_balance <- curr_balance + tgt_value
+      
+      # ts_static <<- TradingSession(22, platform, acct)
+      ts_static$
+        TSSetTransmit(transmit)$
+        TSSetPrelimTradeList(blotter[i,])$
+        TSGenFnlTradeList()
+      
+      ts_static$
+        TSExecuteAllTrades()
+      
+      curr_trd_id <- ts_static$ts_trade_ids[length(ts_static$ts_trade_ids)]
+      actual_balance <- UtilFindCashBalance(tgt_curr)
+      
+      if(actual_balance >= expected_balance) {
+        res <- "Successful"
+        flag <- 1
       } else {
-        i <- i + 1
-        Sys.sleep(1)
+        res <- "Failed"
+        flag <- 0
+      }
+    } else {
+      
+      #
+      # Check the current position
+      #
+      curr_holding <- UtilFindCurrentHolding(ticker, curr, sec_type)
+      if(side == "Buy"){
+        expected_after_holding <- curr_holding + trade_shares
+      } else {
+        expected_after_holding <- curr_holding - trade_shares
+      }
+      
+      #
+      # Trade
+      #
+      # ts_static <<- TradingSession(22, platform, acct)
+      ts_static$
+        TSSetTransmit(transmit)$
+        TSSetPrelimTradeList(blotter[i,])
+      
+        ts_static$TSGenFnlTradeList()$
+        TSExecuteAllTrades()
+      
+      curr_trd_id <- ts_static$ts_trade_ids[length(ts_static$ts_trade_ids)]
+      print(curr_trd_id)
+      err_msg <- ts_static$ts_last_trade_message[length(ts_static$ts_trade_ids)]
+      
+      #
+      # Run a loop to check if the trade is sucessful
+      #
+      flag <- 0
+      while(i <= trade_time_limit){
+        actual_after_holding <- UtilFindCurrentHolding(ticker, curr, sec_type)
+        ifelse(actual_after_holding == expected_after_holding, flag <- 1, flag <- 0)
+        
+        if(flag == 1){
+          break
+        } else {
+          i <- i + 1
+          Sys.sleep(1)
+        }
       }
     }
     
@@ -213,7 +170,7 @@ UtilTradeWithIB <- function(blotter){
                         Time = trade_time,
                         TradeMode = acct,
                         ApplicationStatus = app_sta,
-                        Msg = paste0(sec_type, " trade (",curr_trd_id, ") ", tik_with_crcy, " is successfully traded (", side, ") at ",
+                        Msg = paste0(sec_type, " trade (",curr_trd_id, ") ", ticker, " - ", currency," is successfully traded (", side, ") at ",
                                      trade_date, " ", trade_time),
                         stringsAsFactors = FALSE)
     } else {
@@ -232,29 +189,14 @@ UtilTradeWithIB <- function(blotter){
                         Time = trade_time,
                         TradeMode = acct,
                         ApplicationStatus = app_sta,
-                        Msg = paste0(sec_type, " Trade (",curr_trd_id, ") ", tik_with_crcy, " is not traded (", side, ") at ",
-                                     trade_date, " ", trade_time),
+                        Msg = paste0(sec_type, " trade (",curr_trd_id, ") ", ticker, " - ", currency," is successfully traded (", side, ") at ",
+                                    trade_date, " ", trade_time),
                         stringsAsFactors = FALSE)
     }
-    
+
   }
   return(list(trade_rec = trade_res, msg_rec = msg))
 }
-
-blotter <- data.frame(LocalTicker = "BMO",
-                      Right = "",
-                      Expiry = "",
-                      Strike = "",
-                      Exchange = "TSE",
-                      Action = "Buy",
-                      Quantity = 10,
-                      OrderType = "Mkt",
-                      LimitPrice = 20,
-                      SecurityType = "STK",
-                      Currency = "CAD",
-                      TradeSwitch = TRUE,
-                      stringsAsFactors = FALSE)
-res <- UtilTradeWithIB(blotter)
 
 #
 # Trade forex functions
@@ -262,60 +204,33 @@ res <- UtilTradeWithIB(blotter)
 UtilTradeForexWithIB <- function(blotter){
 
   for(i in 1:nrow(blotter)){
-    curr_us_balance <- UtilFindCurrentHolding("USD", "CASH")
-    curr_ca_balance <- UtilFindCurrentHolding("CAD", "CASH")
+    curr_us_balance <- UtilFindCurrentHolding("USD")
+    curr_ca_balance <- UtilFindCurrentHolding("CAD")
     
     transmit <- blotter[i,"TradeSwitch"]
     tgt_curr <- blotter[,"LocalTicker"]
     tgt_value <- blotter[,"Quantity"]
+    curr_balance <- UtilFindCurrentHolding(tgt_curr)
     
-    if(tgt_curr == "USD"){
-      expected_us_balance <- curr_us_balance + tgt_value
-      
-      # ts_static <<- TradingSession(22, platform, acct)
-      ts_static$
-        TSSetTransmit(transmit)$
-        TSSetPrelimTradeList(blotter[i,])$
-        TSGenFnlTradeList()$
-        TSExecuteAllTrades()
-      
-      actual_us_balance <- UtilFindCurrentHolding("USD", "CASH")
-      
-      if(actual_us_balance >= expected_us_balance) {
-        res <- "Successful"
-      } else {
-        res <- "Failed"
-      }
-    } else if (tgt_curr == "CAD") {
-      expected_ca_balance <- curr_ca_balance + tgt_value - 5   # Account for exchange rate rounding
-      
-      # ts_static <<- TradingSession(22, platform, acct)
-      ts_static$
-        TSSetTransmit(transmit)$
-        TSSetPrelimTradeList(blotter[i,])$
-        TSGenFnlTradeList()$
-        TSExecuteAllTrades()
-      
-      actual_ca_balance <- UtilFindCurrentHolding("CAD", "CASH")
-      
-      if(actual_ca_balance >= expected_ca_balance){
-        res <- "Successful"
-      } else {
-        res <- "Failed"
-      }
+    expected_balance <- curr_balance + tgt_value
+    
+    # ts_static <<- TradingSession(22, platform, acct)
+    ts_static$
+      TSSetTransmit(transmit)$
+      TSSetPrelimTradeList(blotter[i,])$
+      TSGenFnlTradeList()$
+      TSExecuteAllTrades()
+    
+    actual_balance <- UtilFindCurrentHolding(tgt_curr)
+    
+    if(actual_balance >= expected_balance) {
+      res <- "Successful"
     } else {
-      res <- paste0("Currency ", tgt_curr, " is currently not supported!")
+      res <- "Failed"
     }
   }
   return(res)
 }
-
-# blotter <- data.frame(TargetCurrency = "CAD",
-#                       TargetValue = 100,
-#                       SecurityType = "Forex",
-#                       TradeSwitch = FALSE,
-#                       stringsAsFactors = FALSE)
-# res <- UtilTradeForexWithIB(blotter)
 
 #
 # Cancel all trades
@@ -373,7 +288,7 @@ UtilGetStockHistReturn <- function(ticker_w_crncy){
   
   watchlist <- data.frame(LocalTicker = ticker,
                           Currency = currency,
-                          SecurityType = 'Stk',
+                          SecurityType = 'STK',
                           Comments = 'None',
                           stringsAsFactors = FALSE)
   

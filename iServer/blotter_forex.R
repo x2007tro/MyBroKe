@@ -5,10 +5,10 @@ observeEvent({
   input$tgt_curr
 }, {
   tgt_c <- input$tgt_curr
-  if(tgt_c == "USD"){
-    updateTextInput(session, "req_curr", value = "CAD")
+  if(tgt_c != "CAD"){
+    updateSelectInput(session, "req_curr", choices = "CAD")
   } else {
-    updateTextInput(session, "req_curr", value = "USD")
+    updateSelectInput(session, "req_curr", choices = tradable_curr[!(tradable_curr %in% "CAD")])
   }
 })
 
@@ -84,8 +84,8 @@ observeEvent(input$trade_forex, {
                         stringsAsFactors = FALSE)
   
   withProgress(message = 'Trading in progress ...', {
-    res <- UtilTradeForexWithIB(blotter)
+    res <- UtilTradeWithIB(blotter)
   })
   
-  updateTextInput(session, "forex_trade_msg", value = res)
+  updateTextInput(session, "forex_trade_msg", value = res$msg_rec)
 })
