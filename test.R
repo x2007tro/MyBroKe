@@ -112,3 +112,9 @@
 #   stringsAsFactors = FALSE
 # )
 # res <- UtilTradeWithIB(forex_blotter)
+#
+# # Test cancel all trades
+# res <- UtilCancelAllTrades()
+#
+# # Test get Econ indicators
+# x <- UtilGetEconIndicators()

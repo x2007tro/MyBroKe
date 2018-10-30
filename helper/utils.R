@@ -244,7 +244,6 @@ UtilCancelAllTrades <- function(){
   # TSCloseTradingSession(ts_static)
   # ts_static <<- TradingSession(22, platform, acct)
 }
-# res <- UtilCancelAllTrades()
 
 #
 # Download etf historical price and calculate return
@@ -465,8 +464,6 @@ UtilGetEconIndicators <- function(ei_fred, ei_quandl){
               lai_dt = lai_data))
   
 }
-#x <- UtilGetEconIndicators()
-
 #
 # Manual open & close connection
 #
