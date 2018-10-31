@@ -255,7 +255,8 @@ UtilGetStockHistReturn <- function(ticker_w_crncy){
                           Currency = currency,
                           `Security Type` = 'STK',
                           Comments = 'None',
-                          stringsAsFactors = FALSE)
+                          stringsAsFactors = FALSE,
+                          check.names = FALSE)
   
   #
   # Retrieve quotes
@@ -430,6 +431,7 @@ UtilGetEconIndicators <- function(ei_fred, ei_quandl){
               lai_dt = lai_data))
   
 }
+
 #
 # Manual open & close connection
 #

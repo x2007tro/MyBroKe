@@ -73,25 +73,25 @@
 #                                #goodTillDate = gtd,
 #                                outsideRTH = "1"))
 # 
-##
-#  Test buy equity
-##
-stk_blotter <- data.frame(
-  LocalTicker = "IBM",
-  Right = "",
-  Expiry = "",
-  Strike = "",
-  Exchange = "",
-  Action = "Buy",
-  Quantity = 10,
-  OrderType = "Mkt",
-  LimitPrice = 20,
-  SecurityType = "STK",
-  Currency = "USD",
-  TradeSwitch = TRUE,
-  stringsAsFactors = FALSE
-)
-res <- UtilTradeWithIB(stk_blotter)
+# ##
+# #  Test buy equity
+# ##
+# stk_blotter <- data.frame(
+#   LocalTicker = "IBM",
+#   Right = "",
+#   Expiry = "",
+#   Strike = "",
+#   Exchange = "",
+#   Action = "Buy",
+#   Quantity = 10,
+#   OrderType = "Mkt",
+#   LimitPrice = 20,
+#   SecurityType = "STK",
+#   Currency = "USD",
+#   TradeSwitch = TRUE,
+#   stringsAsFactors = FALSE
+# )
+# res <- UtilTradeWithIB(stk_blotter)
 # 
 # ##
 # # Test buy forex
@@ -117,5 +117,7 @@ res <- UtilTradeWithIB(stk_blotter)
 # res <- UtilCancelAllTrades()
 #
 # # Test get Econ indicators
-# x <- UtilGetEconIndicators()
-x <- UtilGetMarketReturn(watchlist)
+#x <- UtilGetEconIndicators(ei_fred, ei_quandl)
+#x <- UtilGetMarketReturn(watchlist)
+#x <- UtilGetStockLastestPrice("AAPL-USD")
+x <- UtilGetStockHistReturn("AAPL-USD")
