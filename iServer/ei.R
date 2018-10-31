@@ -5,7 +5,10 @@ eiAutoUpdate <- reactiveTimer(ei_refresh_time)
 
 ei_data <- reactive({
   eiAutoUpdate()
-  ei_data <- UtilGetEconIndicators(ei_fred, ei_quandl)
+  withProgress(message = 'Get economic indicators data ...', {
+    ei_data <- UtilGetEconIndicators(ei_fred, ei_quandl)
+  })
+  
 })
 
 lapply(1:length(econ_indi_tab_names), function(i){
