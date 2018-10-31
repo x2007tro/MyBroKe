@@ -5,7 +5,10 @@ autoUpdate <- reactiveTimer(refresh_time)
 
 port_info <- reactive({
   autoUpdate()
-  port_info <- UtilGetPortfolio()
+  withProgress(message = 'Get economic indicators data ...', {
+    port_info <- UtilGetPortfolio()
+  })
+  
 })
 
 output$last_update_time_nonforex <- renderText({
@@ -25,6 +28,7 @@ output$last_update_time_cashbal <- renderText({
 
 
 output$portfolio_holding_nonforex <- DT::renderDataTable({
+  
   tbl2dis <- port_info()$holdings_nonforex
   
   DT::datatable(
