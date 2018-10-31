@@ -1,7 +1,7 @@
 ##
 # Trade hist tabpanel
 trade_hist_tp <- tabPanel(
-  "Trade History",
+  "Account Activity",
   
   tabsetPanel(
     tabPanel(
@@ -24,6 +24,16 @@ trade_hist_tp <- tabPanel(
         )
       )
     )
+    # tabPanel(
+    #   "Error Log",
+    #   tags$br(),
+    #   fluidRow(
+    #     column(
+    #       12,
+    #       DT::dataTableOutput("err_log")     
+    #     )
+    #   )
+    # )
   )
   
 )

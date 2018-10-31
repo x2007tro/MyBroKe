@@ -125,7 +125,7 @@ lapply(1:fut_max_blotter_size, function(i){
                           Quantity = input[[paste0('fut_shares',i)]],
                           OrderType = input[[paste0('fut_type',i)]],
                           LimitPrice = input[[paste0('fut_limit_price',i)]],
-                          `Security Type ` = "FUT",
+                          `Security Type` = "FUT",
                           Currency = input[[paste0('fut_currency',i)]],
                           TradeSwitch = input[[paste0('fut_transmit',i)]],
                           stringsAsFactors = FALSE,

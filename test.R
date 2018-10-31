@@ -77,19 +77,20 @@
 # #  Test buy equity
 # ##
 # stk_blotter <- data.frame(
-#   LocalTicker = "IBM",
+#   Symbol = "RY",
 #   Right = "",
-#   Expiry = "",
+#   Expiry = "20181221",
 #   Strike = "",
 #   Exchange = "",
 #   Action = "Buy",
 #   Quantity = 10,
 #   OrderType = "Mkt",
 #   LimitPrice = 20,
-#   SecurityType = "STK",
+#   `Security Type` = "FUT",
 #   Currency = "USD",
 #   TradeSwitch = TRUE,
-#   stringsAsFactors = FALSE
+#   stringsAsFactors = FALSE,
+#   check.names = FALSE
 # )
 # res <- UtilTradeWithIB(stk_blotter)
 # 
@@ -120,4 +121,6 @@
 #x <- UtilGetEconIndicators(ei_fred, ei_quandl)
 #x <- UtilGetMarketReturn(watchlist)
 #x <- UtilGetStockLastestPrice("AAPL-USD")
-x <- UtilGetStockHistReturn("AAPL-USD")
+x <- UtilGetStockHistPrcAndRet("AAPL-USD")
+#UtilPlotMarketReturn(x$cumret, "AAPL-USD", "1Y")
+UtilPlotMarketPrice(x$prc, "AAPL-USD", "1Y")

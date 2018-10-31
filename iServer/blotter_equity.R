@@ -117,7 +117,7 @@ lapply(1:eq_max_blotter_size, function(i){
     blotter <- data.frame(Symbol = input[[paste0('eq_ticker',i)]],
                           Right = "",
                           Expiry = "",
-                          Strike = 0,
+                          Strike = "",
                           Exchange = input[[paste0('eq_exch',i)]],
                           Action = input[[paste0('eq_side',i)]],
                           Quantity = input[[paste0('eq_shares',i)]],

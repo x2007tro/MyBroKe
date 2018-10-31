@@ -125,10 +125,10 @@ UtilTradeWithIB <- function(blotter){
       # ts_static <<- TradingSession(22, platform, acct)
       ts_static$
         TSSetTransmit(transmit)$
-        TSSetPrelimTradeList(blotter[i,])
-      
-        ts_static$TSGenFnlTradeList()$
-        TSExecuteAllTrades()
+        TSSetPrelimTradeList(blotter[i,])$
+        TSGenFnlTradeList()
+        
+      ts_static$TSExecuteAllTrades()
       
       curr_trd_id <- ts_static$ts_trade_ids[length(ts_static$ts_trade_ids)]
       print(curr_trd_id)
@@ -189,7 +189,7 @@ UtilTradeWithIB <- function(blotter){
                         Time = trade_time,
                         TradeMode = acct,
                         ApplicationStatus = app_sta,
-                        Msg = paste0(sec_type, " trade (",curr_trd_id, ") ", ticker, " - ", curr," is successfully traded (", side, ") at ",
+                        Msg = paste0(sec_type, " trade (",curr_trd_id, ") ", ticker, " - ", curr," is not successfully traded (", side, ") at ",
                                     trade_date, " ", trade_time),
                         stringsAsFactors = FALSE)
     }
@@ -235,7 +235,7 @@ UtilGetMarketReturn <- function(watchlist){
   return(ei.etf)
 }
 
-UtilGetStockHistReturn <- function(ticker_w_crncy){
+UtilGetStockHistPrcAndRet <- function(ticker_w_crncy){
   #
   # Setup
   #
@@ -265,10 +265,75 @@ UtilGetStockHistReturn <- function(ticker_w_crncy){
                                            hist_enddate = end.date)
   fshd1 <- FSHDSetWatchlist(fshd1, watchlist)
   fshd1 <- FSHDObtainAllHistPrcs(fshd1)
-  ei.etf <- fshd1$FSHD_hist_cumret
-  colnames(ei.etf) <- ticker_w_crncy
   
-  return(ei.etf)
+  prc <- fshd1$FSHD_hist_prc
+  colnames(prc) <- ticker_w_crncy
+  
+  cumret <- fshd1$FSHD_hist_cumret
+  colnames(cumret) <- ticker_w_crncy
+  
+  return(list(
+    prc = prc,
+    cumret = cumret
+  ))
+}
+
+#
+# Plot etf return data
+#
+UtilPlotMarketPrice <- function(master_plot_data, market, period){
+  
+  if(market == "Equity"){
+    plot_data_prelim <- master_plot_data[,1:3]
+  } else if (market == "Tbond"){
+    plot_data_prelim <- master_plot_data[,4:7]
+  } else if (market == "Cbond"){
+    plot_data_prelim <- master_plot_data[,8:10]
+  } else {
+    # do nothing
+    plot_data_prelim <- master_plot_data
+  }
+  
+  # Filter based on period
+  if(period == "5D"){
+    offset <- 5
+  } else if(period == "1M"){
+    offset <- 252/12
+  } else if(period == "3M"){
+    offset <- 252/12 * 3
+  } else if(period == "6M"){
+    offset <- 252/12 * 6
+  } else if(period == "1Y"){
+    offset <- 252
+  } else if(period == "3Y"){
+    offset <- 252*3
+  } else if(period == "5Y"){
+    offset <- 252*5
+  } else if(period == "YTD"){
+    offset <- 252
+  } else {
+    offset <- 0
+  }
+  
+  base <- plot_data_prelim[(nrow(plot_data_prelim)-offset+1):nrow(plot_data_prelim),]
+  
+  # Transform data to dataframe
+  plot_data_prelim_df <- data.frame(Period = index(base),
+                                    Value = base,
+                                    stringsAsFactors = FALSE)
+  colnames(plot_data_prelim_df) <- c("Period",colnames(plot_data_prelim))
+  plot_data_final <- tidyr::gather(plot_data_prelim_df, Security, CumRet, -Period)
+  
+  YearMonthDay <- function(x) format(x, "%Y-%m-%d")
+  my_plot <- ggplot(plot_data_final, aes(x = Period, y = CumRet, color = Security)) +
+    geom_point() + 
+    geom_line() +
+    #scale_x_date(date_breaks = "1 day", labels = YearMonthDay) +
+    ggtitle(paste0("Price History for ", market, " Market")) +
+    labs(caption = paste0("Plot produced on ", format(Sys.time(), "%Y-%m-%d %H:%M:%S"))) +
+    theme_pka()
+  
+  return(my_plot)
 }
 
 #

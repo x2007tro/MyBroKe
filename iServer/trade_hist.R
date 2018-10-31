@@ -2,7 +2,6 @@
 # handling past trades
 #
 output$past_trades <- DT::renderDataTable({
-  port_info()    # To auto update history
   trades <- ReadDataFromSS(db_obj, "MyBroKe_TradeHistory")
   DT::datatable(
     trades, 
@@ -19,7 +18,6 @@ output$past_trades <- DT::renderDataTable({
 # handling past messages
 #
 output$past_messages <- DT::renderDataTable({
-  port_info()    # To auto update history
   messages <- ReadDataFromSS(db_obj, "MyBroKe_TradeMessage")
   DT::datatable(
     messages, 
@@ -31,3 +29,19 @@ output$past_messages <- DT::renderDataTable({
     )
   )
 })
+
+# #
+# # Err log
+# #
+# output$err_log <- DT::renderDataTable({
+#   log <- ReadDataFromSS(db_obj, "MyBroKe_ErrorLog")
+#   DT::datatable(
+#     log, 
+#     options = list(
+#       pageLength = 10,
+#       orderClasses = TRUE,
+#       searching = TRUE,
+#       paging = TRUE
+#     )
+#   )
+# })

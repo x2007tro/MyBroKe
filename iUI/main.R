@@ -37,6 +37,9 @@ mainUI <- fluidPage(theme = shinythemes::shinytheme("simplex"),
         trade_hist_tp,
         download_tp,
         
+        "Report",
+        perfor_tp,
+        
         "Trade",
         forex_blotter_tp,
         equity_blotter_tp,
@@ -45,12 +48,8 @@ mainUI <- fluidPage(theme = shinythemes::shinytheme("simplex"),
 
         "Market",
         market_trend_tp,
-        market_news_tp,
-        ei_tp,
-        
-        "Report",
-        perfor_tp
-        
+        #market_news_tp,
+        ei_tp
       )
     ),
 

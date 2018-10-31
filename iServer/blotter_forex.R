@@ -17,17 +17,19 @@ observeEvent({
 #
 observeEvent({ 
   input$tgt_curr
+  input$req_curr
   input$tgt_val
 }, {
   tgt_c <- input$tgt_curr
   tgt_v <- input$tgt_val
-  port_info <- UtilGetPortfolio()
-  acct_info <- port_info()$acctInfo
-  exch_rate <- acct_info[rownames(acct_info) == "ExchangeRate","Value"]
+  req_c <- input$req_curr
+  cb <- port_info()$cash_balance
   
-  if(tgt_c == "USD"){
+  if(tgt_c != "CAD"){
+    exch_rate <- cb[cb$Currency == tgt_c,"Exchange Rate"]
     updateTextInput(session, "req_val", value = round(tgt_v * exch_rate,0))
   } else {
+    exch_rate <- cb[cb$Currency == req_c,"Exchange Rate"]
     updateTextInput(session, "req_val", value = round(tgt_v / exch_rate,0))
   }
 })
@@ -86,7 +88,17 @@ observeEvent(input$trade_forex, {
   
   withProgress(message = 'Trading in progress ...', {
     res <- UtilTradeWithIB(blotter)
+    msg <- res$msg_rec
+    trd <- res$trade_rec
   })
   
-  updateTextInput(session, "forex_trade_msg", value = res$msg_rec)
+  ## 
+  # Write message to db
+  WriteDataToSS(db_obj, trd, "MyBroKe_TradeHistory", apd = TRUE)
+  WriteDataToSS(db_obj, msg, "MyBroKe_TradeMessage", apd = TRUE)
+  
+  output$forex_trade_msg <- renderText({
+    msg$Msg
+  })
+  
 })
