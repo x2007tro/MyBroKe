@@ -68,4 +68,9 @@ mainServer <- function(input, output, session) {
   ##
   source("./iServer/conf.R", local = TRUE)
   
+  ##
+  # report portformance
+  ##
+  source("./iServer/report_perfor.R", local = TRUE)
+  
 }

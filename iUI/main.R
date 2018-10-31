@@ -3,7 +3,7 @@
 ##
 ui_files <- c("portfolio", "account", "watchlist", "trade_hist", "download",
               "blotter_forex", "blotter_equity", "blotter_option", "blotter_future",
-              "market_trend", "market_news", "ei",
+              "market_trend", "market_news", "ei", "report_perfor",
               "dev", "conf")
 lapply(ui_files, function(f){
   source(paste0("./iUI/", f, ".R"), local = FALSE)
@@ -46,7 +46,10 @@ mainUI <- fluidPage(theme = shinythemes::shinytheme("simplex"),
         "Market",
         market_trend_tp,
         market_news_tp,
-        ei_tp
+        ei_tp,
+        
+        "Report",
+        perfor_tp
         
       )
     ),

@@ -37,19 +37,19 @@ output$portfolio_holding_nonforex <- DT::renderDataTable({
     ) 
   ) %>% 
     DT::formatStyle(
-      'SecurityType',
+      'Security Type',
       fontWeight = "bold",
       color = "gray",
       backgroundColor = DT::styleEqual(
-        unique(tbl2dis$SecurityType),
-        RColorBrewer::brewer.pal(n = 12, name = "Set3")[1:length(unique(tbl2dis$SecurityType))]
+        unique(tbl2dis$`Security Type`),
+        RColorBrewer::brewer.pal(n = 12, name = "Set3")[1:length(unique(tbl2dis$`Security Type`))]
       )
     ) %>%
     DT::formatCurrency("Position", currency = "", digits = 0) %>% 
-    DT::formatCurrency(c("Cost", "MktPrc", "MktVal", "UnrealizedPNL"), currency = "$", digits = 0) %>% 
-    DT::formatPercentage("UnrealizedPNLPrc", 2) %>% 
+    DT::formatCurrency(c("Cost", "Market Price", "Market Value", "Unrealized Profit"), currency = "$", digits = 0) %>% 
+    DT::formatPercentage("Unrealized Change%", 2) %>% 
     DT::formatStyle(
-      c("UnrealizedPNL", "UnrealizedPNLPrc"),
+      c("Unrealized Profit", "Unrealized Change%"),
       fontWeight = "bold",
       #color = "white",
       color = DT::styleInterval(
@@ -71,20 +71,20 @@ output$portfolio_holding_forex <- DT::renderDataTable({
     ) 
   ) %>% 
     DT::formatStyle(
-      'SecurityType',
+      'Security Type',
       fontWeight = "bold",
       color = "gray",
       backgroundColor = DT::styleEqual(
-        unique(tbl2dis$SecurityType),
-        RColorBrewer::brewer.pal(n = 12, name = "Set3")[1:length(unique(tbl2dis$SecurityType))]
+        unique(tbl2dis$`Security Type`),
+        RColorBrewer::brewer.pal(n = 12, name = "Set3")[1:length(unique(tbl2dis$`Security Type`))]
       )
     ) %>%
     DT::formatCurrency("Position", currency = "", digits = 0) %>% 
-    DT::formatCurrency(c("Cost", "MktPrc"), currency = "", digits = 5) %>% 
-    DT::formatCurrency(c("MktVal", "UnrealizedPNL"), currency = "$", digits = 0) %>% 
-    DT::formatPercentage("UnrealizedPNLPrc", 2) %>% 
+    DT::formatCurrency(c("Cost", "Market Price"), currency = "", digits = 5) %>% 
+    DT::formatCurrency(c("Market Value", "Unrealized Profit"), currency = "$", digits = 0) %>% 
+    DT::formatPercentage("Unrealized Change%", 2) %>% 
     DT::formatStyle(
-      c("UnrealizedPNL", "UnrealizedPNLPrc"),
+      c("Unrealized Profit", "Unrealized Change%"),
       fontWeight = "bold",
       #color = "white",
       color = DT::styleInterval(
@@ -130,16 +130,15 @@ observeEvent(input$add_trade_list_submit, {
       ##
       # Retrieve values
       holdings <- port_info()$holdings_nonforex
-      ticker <- holdings[my_row,"LocalTicker"]
+      ticker <- holdings[my_row,"Symbol"]
       right <- holdings[my_row,"Right"]
       expiry <- holdings[my_row,"Expiry"]
       strike <- holdings[my_row,"Strike"]
       currency <- holdings[my_row,"Currency"]
       exchange <- holdings[my_row,"Exchange"]
-      security_type <- holdings[my_row,"SecurityType"]
+      security_type <- holdings[my_row,"Security Type"]
       position <- holdings[my_row,"Position"]
-      prc <- holdings[my_row,"MktPrc"]
-      
+      prc <- holdings[my_row,"Market Price"]
       
       if(security_type == "STK"){
         # increase blotter size
@@ -152,12 +151,12 @@ observeEvent(input$add_trade_list_submit, {
             tags$div(class = "blotter_fields", selectInput(paste0('eq_currency',eq_blotter_size_tracker), "Currency", choices = tradable_curr, selected = currency, width = blotter_field_default_width)),
             tags$div(class = "blotter_fields", selectInput(paste0('eq_side',eq_blotter_size_tracker), "Side", choices = c("Buy", "Sell"), selected = "Sell", width = blotter_field_default_width)),
             tags$div(class = "blotter_fields", numericInput(paste0('eq_shares',eq_blotter_size_tracker), "Shares", value = position, min = 0, max = 1000,  width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields", selectInput(paste0('eq_type',eq_blotter_size_tracker), "Type", choices = c("Lmt", "Mkt"), width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields", selectInput(paste0('eq_type',eq_blotter_size_tracker), "Type", choices = c("Lmt", "Mkt"), selected = "Mkt", width = blotter_field_default_width)),
             tags$div(class = "blotter_fields", numericInput(paste0('eq_limit_price',eq_blotter_size_tracker), "Limit Price", value = prc, min = 0, max = 1000, width = blotter_field_default_width)),
             tags$div(class = "blotter_fields", textInput(paste0('eq_trade_value',eq_blotter_size_tracker), "Trade Value", value = "0", width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields", checkboxInput(paste0('eq_transmit',eq_blotter_size_tracker), "Transmit", value = FALSE, width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields_wide", actionButton(class = "btn-primary", paste0('eq_reqc',eq_blotter_size_tracker), "Request", width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields_wide", actionButton(class = "btn-primary", paste0('eq_trade',eq_blotter_size_tracker), "Trade", width = blotter_field_default_width))
+            tags$div(class = "blotter_fields", style = "padding-top:20px", checkboxInput(paste0('eq_transmit',eq_blotter_size_tracker), "Transmit", value = FALSE, width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields_wide", style = "padding-top:20px", actionButton(class = "btn-primary", paste0('eq_reqc',eq_blotter_size_tracker), "Request", width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields_wide", style = "padding-top:20px", actionButton(class = "btn-primary", paste0('eq_trade',eq_blotter_size_tracker), "Trade", width = blotter_field_default_width))
           )
         })
       } else if (security_type == "OPT"){
@@ -166,20 +165,20 @@ observeEvent(input$add_trade_list_submit, {
         
         output[[paste0('opt_trade_item',opt_blotter_size_tracker)]] <- renderUI({
           list(
-            tags$div(class = "blotter_fields", textInput(paste0('opt_ticker',i), "Symbol", value = ticker, width = blotter_field_default_width, placeholder = "AAPL")),
-            tags$div(class = "blotter_fields", selectInput(paste0('opt_right',i), "Right", choices = c("C", "P"), selected = right, width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields_wide", selectInput(paste0('opt_expiry',i), "Expiry", choices = expiry, selected = expiry, width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields", selectInput(paste0('opt_strike',i), "Strike", choices = strike, selected = strike, width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields", selectInput(paste0('opt_currency',i), "Currency", choices = c("CAD","USD"), selected = currency, width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields", selectInput(paste0('opt_side',i), "Side", choices = c("Buy", "Sell"), selected = "Sell", width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields", numericInput(paste0('opt_shares',i), "Shares", value = position, min = 0, max = 1000,  width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields", selectInput(paste0('opt_type',i), "Type", choices = c("Lmt", "Mkt"), width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields", numericInput(paste0('opt_limit_price',i), "Limit Price", value = prc, min = 0, max = 1000,  width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields", numericInput(paste0('opt_multiplier',i), "Multiplier", value = 100, min = 100, max = 100,  width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields", textInput(paste0('opt_trade_value',i), "Trade Value", value = "0", width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields", checkboxInput(paste0('opt_transmit',i), "Transmit", value = FALSE, width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields_wide", actionButton(class = "btn-primary", paste0('opt_reqc',i), "Request", width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields_wide", actionButton(class = "btn-primary", paste0('opt_trade',i), "Trade", width = blotter_field_default_width))
+            tags$div(class = "blotter_fields", textInput(paste0('opt_ticker',opt_blotter_size_tracker), "Symbol", value = ticker, width = blotter_field_default_width, placeholder = "AAPL")),
+            tags$div(class = "blotter_fields", selectInput(paste0('opt_right',opt_blotter_size_tracker), "Right", choices = c("C", "P"), selected = right, width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields_wide", selectInput(paste0('opt_expiry',opt_blotter_size_tracker), "Expiry", choices = expiry, selected = expiry, width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields", selectInput(paste0('opt_strike',opt_blotter_size_tracker), "Strike", choices = strike, selected = strike, width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields", selectInput(paste0('opt_currency',opt_blotter_size_tracker), "Currency", choices = c("CAD","USD"), selected = currency, width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields", selectInput(paste0('opt_side',opt_blotter_size_tracker), "Side", choices = c("Buy", "Sell"), selected = "Sell", width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields", numericInput(paste0('opt_shares',opt_blotter_size_tracker), "Shares", value = position, min = 0, max = 1000,  width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields", selectInput(paste0('opt_type',opt_blotter_size_tracker), "Type", choices = c("Lmt", "Mkt"), selected = "Mkt", width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields", numericInput(paste0('opt_limit_price',opt_blotter_size_tracker), "Limit Price", value = prc/100, min = 0, max = 1000,  width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields", numericInput(paste0('opt_multiplier',opt_blotter_size_tracker), "Multiplier", value = 100, min = 100, max = 100,  width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields", textInput(paste0('opt_trade_value',opt_blotter_size_tracker), "Trade Value", value = "0", width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields", style = "padding-top:20px", checkboxInput(paste0('opt_transmit',opt_blotter_size_tracker), "Transmit", value = FALSE, width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields_wide", style = "padding-top:20px", actionButton(class = "btn-primary", paste0('opt_reqc',opt_blotter_size_tracker), "Request", width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields_wide", style = "padding-top:20px", actionButton(class = "btn-primary", paste0('opt_trade',opt_blotter_size_tracker), "Trade", width = blotter_field_default_width))
           )
         })
       } else if (security_type == "FUT"){
@@ -188,18 +187,18 @@ observeEvent(input$add_trade_list_submit, {
         
         output[[paste0('fut_trade_item',fut_blotter_size_tracker)]] <- renderUI({
           list(
-            tags$div(class = "blotter_fields", textInput(paste0('fut_ticker',i), "Symbol", value = ticker, width = blotter_field_default_width, placeholder = "AAPL")),
-            tags$div(class = "blotter_fields_wide", selectInput(paste0('fut_expiry',i), "Expiry", choices = expiry, selected = expiry, width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields", selectInput(paste0('fut_currency',i), "Currency", choices = currency, selected = currency, width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields", selectInput(paste0('fut_side',i), "Side", choices = c("Buy", "Sell"), selected = "Sell", width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields", numericInput(paste0('fut_shares',i), "Shares", value = position, min = 0, max = 1000,  width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields", selectInput(paste0('fut_type',i), "Type", choices = c("Lmt", "Mkt"), width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields", numericInput(paste0('fut_limit_price',i), "Limit Price", value = prc, min = 0, max = 1000,  width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields", numericInput(paste0('fut_multiplier',i), "Multiplier", value = 100, min = 100, max = 100,  width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields", textInput(paste0('fut_trade_value',i), "Trade Value", value = "0", width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields", checkboxInput(paste0('fut_transmit',i), "Transmit", value = FALSE, width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields_wide", actionButton(class = "btn-primary", paste0('fut_reqc',i), "Request", width = blotter_field_default_width)),
-            tags$div(class = "blotter_fields_wide", actionButton(class = "btn-primary", paste0('fut_trade',i), "Trade", width = blotter_field_default_width))
+            tags$div(class = "blotter_fields", textInput(paste0('fut_ticker',fut_blotter_size_tracker), "Symbol", value = ticker, width = blotter_field_default_width, placeholder = "AAPL")),
+            tags$div(class = "blotter_fields_wide", selectInput(paste0('fut_expiry',fut_blotter_size_tracker), "Expiry", choices = expiry, selected = expiry, width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields", selectInput(paste0('fut_currency',fut_blotter_size_tracker), "Currency", choices = currency, selected = currency, width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields", selectInput(paste0('fut_side',fut_blotter_size_tracker), "Side", choices = c("Buy", "Sell"), selected = "Sell", width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields", numericInput(paste0('fut_shares',fut_blotter_size_tracker), "Shares", value = position, min = 0, max = 1000,  width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields", selectInput(paste0('fut_type',fut_blotter_size_tracker), "Type", choices = c("Lmt", "Mkt"), selected = "Mkt", width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields", numericInput(paste0('fut_limit_price',fut_blotter_size_tracker), "Limit Price", value = prc/100, min = 0, max = 1000,  width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields", numericInput(paste0('fut_multiplier',fut_blotter_size_tracker), "Multiplier", value = 100, min = 100, max = 100,  width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields", textInput(paste0('fut_trade_value',fut_blotter_size_tracker), "Trade Value", value = "0", width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields", style = "padding-top:20px", checkboxInput(paste0('fut_transmit',fut_blotter_size_tracker), "Transmit", value = FALSE, width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields_wide", style = "padding-top:20px", actionButton(class = "btn-primary", paste0('fut_reqc',fut_blotter_size_tracker), "Request", width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields_wide", style = "padding-top:20px", actionButton(class = "btn-primary", paste0('fut_trade',fut_blotter_size_tracker), "Trade", width = blotter_field_default_width))
           )
         })
       } else {

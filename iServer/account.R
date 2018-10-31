@@ -15,12 +15,12 @@ output$account_recon <- DT::renderDataTable({
     DT::formatCurrency(c("Balance", "CAD Balance"), currency = "$", digits = 0) %>% 
     DT::formatCurrency(c("Exchange Rate"), currency = "", digits = 5) %>% 
     DT::formatStyle(
-      "SecurityType",
+      "Security Type",
       fontWeight = "bold",
       color = "gray",
       backgroundColor = DT::styleEqual(
-        unique(tbl2dis$SecurityType),
-        brewed_colors[1:length(unique(tbl2dis$SecurityType))]
+        unique(tbl2dis$`Security Type`),
+        brewed_colors[1:length(unique(tbl2dis$`Security Type`))]
       )
     )
 })

@@ -18,13 +18,13 @@ forex_blotter_tp <- tabPanel(
             tags$div(class = "blotter_fields_wide", numericInput("tgt_val", "Target Value", 100, width = blotter_field_default_width_wide)),
             tags$div(class = "blotter_fields_wide", selectInput("req_curr", "Required Currency", choices = "CAD", selectize = TRUE, multiple = FALSE, width = blotter_field_default_width_wide)),
             tags$div(class = "blotter_fields_wide", textInput("req_val", "Required Value", value = "0", width = blotter_field_default_width_wide)),
-            tags$div(class = "blotter_fields", checkboxInput('forex_trade_transmit', "Transmit", value = FALSE, width = blotter_field_default_width)),
+            tags$div(class = "blotter_fields", style = "padding-top:20px", checkboxInput('forex_trade_transmit', "Transmit", value = FALSE, width = blotter_field_default_width)),
             tags$div(
-              class = "blotter_fields_wide", 
+              class = "blotter_fields_wide", style = "padding-top:20px", 
               actionButton(class="btn-primary", "request_forex", "Request", width = blotter_field_default_width)
             ),
             tags$div(
-              class = "blotter_fields_wide", 
+              class = "blotter_fields_wide", style = "padding-top:20px", 
               actionButton(class="btn-primary", "trade_forex", "Trade", width = blotter_field_default_width)
             )
           ))

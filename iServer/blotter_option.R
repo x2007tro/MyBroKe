@@ -5,7 +5,6 @@ observeEvent(input$opt_blotter_size_selector,{
   #
   # Clear current value
   #
-  print(opt_blotter_size_tracker)
   lapply(1:opt_blotter_size_tracker, function(i){
     output[[paste0('opt_trade_item',i)]] <- renderUI({
       tags$div()
@@ -16,7 +15,6 @@ observeEvent(input$opt_blotter_size_selector,{
   # Update new value
   # 
   opt_blotter_size_tracker <<- as.numeric(input$opt_blotter_size_selector)
-  print(opt_blotter_size_tracker)
   lapply(1:opt_blotter_size_tracker, function(i){
     output[[paste0('opt_trade_item',i)]] <- renderUI({
       list(
@@ -31,9 +29,9 @@ observeEvent(input$opt_blotter_size_selector,{
         tags$div(class = "blotter_fields", numericInput(paste0('opt_limit_price',i), "Limit Price", value = 1, min = 0, max = 1000,  width = blotter_field_default_width)),
         tags$div(class = "blotter_fields", numericInput(paste0('opt_multiplier',i), "Multiplier", value = 100, min = 100, max = 100,  width = blotter_field_default_width)),
         tags$div(class = "blotter_fields", textInput(paste0('opt_trade_value',i), "Trade Value", value = "0", width = blotter_field_default_width)),
-        tags$div(class = "blotter_fields", checkboxInput(paste0('opt_transmit',i), "Transmit", value = FALSE, width = blotter_field_default_width)),
-        tags$div(class = "blotter_fields_wide", actionButton(class = "btn-primary", paste0('opt_reqc',i), "Request", width = blotter_field_default_width)),
-        tags$div(class = "blotter_fields_wide", actionButton(class = "btn-primary", paste0('opt_trade',i), "Trade", width = blotter_field_default_width))
+        tags$div(class = "blotter_fields", style = "padding-top:20px", checkboxInput(paste0('opt_transmit',i), "Transmit", value = FALSE, width = blotter_field_default_width)),
+        tags$div(class = "blotter_fields_wide", style = "padding-top:20px", actionButton(class = "btn-primary", paste0('opt_reqc',i), "Request", width = blotter_field_default_width)),
+        tags$div(class = "blotter_fields_wide", style = "padding-top:20px", actionButton(class = "btn-primary", paste0('opt_trade',i), "Trade", width = blotter_field_default_width))
       )
     })
   })
@@ -139,7 +137,7 @@ lapply(1:opt_max_blotter_size, function(i){
 lapply(1:opt_max_blotter_size, function(i){
   observeEvent(input[[paste0("opt_trade",i)]],{
     
-    blotter <- data.frame(LocalTicker = input[[paste0('opt_ticker',i)]],
+    blotter <- data.frame(Symbol = input[[paste0('opt_ticker',i)]],
                           Right = input[[paste0('opt_right',i)]],
                           Expiry = input[[paste0('opt_expiry',i)]],
                           Strike = input[[paste0('opt_strike',i)]],
@@ -148,10 +146,11 @@ lapply(1:opt_max_blotter_size, function(i){
                           Quantity = input[[paste0('opt_shares',i)]],
                           OrderType = input[[paste0('opt_type',i)]],
                           LimitPrice = input[[paste0('opt_limit_price',i)]],
-                          SecurityType = "OPT",
+                          `Security Type` = "OPT",
                           Currency = input[[paste0('opt_currency',i)]],
                           TradeSwitch = input[[paste0('opt_transmit',i)]],
-                          stringsAsFactors = FALSE)
+                          stringsAsFactors = FALSE,
+                          check.names = FALSE)
     
     withProgress(message = 'Trading in progress ...', {
       res <- UtilTradeWithIB(blotter)

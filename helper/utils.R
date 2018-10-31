@@ -13,11 +13,11 @@ UtilGetPortfolio <- function(){
     TSCloseTradingSession()
   
   return(list(update_datetime = Sys.time(),
-              holdings_nonforex = ts_tmp$ts_port_holdings_nonforex %>% dplyr::mutate(UnrealizedPNLPrc = MktPrc/Cost - 1),
-              holdings_forex = ts_tmp$ts_port_holdings_forex %>% dplyr::mutate(UnrealizedPNLPrc = MktPrc/Cost - 1),
+              holdings_nonforex = ts_tmp$ts_port_holdings_nonforex %>% dplyr::mutate(`Unrealized Change%` = `Market Price`/Cost - 1),
+              holdings_forex = ts_tmp$ts_port_holdings_forex %>% dplyr::mutate(`Unrealized Change%` = `Market Price`/Cost - 1),
               port_into = ts_tmp$ts_port_info,
               cash_balance = ts_tmp$ts_cash_balance,
-              ts_acc_recon = ts_tmp$ts_acc_recon %>% dplyr::select(-MarketDatetime)))
+              ts_acc_recon = ts_tmp$ts_acc_recon %>% dplyr::select(-`Market Datetime`)))
 }
 
 #
@@ -28,7 +28,7 @@ UtilFindCurrentHolding <- function(ticker, curr, sec_type){
   if(nrow(port) == 0){
     pos <- 0
   } else {
-    holding <- port %>% dplyr::filter(LocalTicker == ticker & Currency == curr & SecurityType == sec_type)
+    holding <- port %>% dplyr::filter(Symbol == ticker & Currency == curr & `Security Type` == sec_type)
     
     if(nrow(holding) == 0){
       pos <- 0
@@ -73,16 +73,16 @@ UtilGetContractDetails <- function(sym, cur = "", sec_type){
 #
 UtilTradeWithIB <- function(blotter){
   for(i in 1:nrow(blotter)){
-    ticker <- blotter[i,"LocalTicker"]
+    ticker <- blotter[i,"Symbol"]
     curr <- blotter[i,"Currency"]
-    sec_type <- blotter[i,"SecurityType"]
+    sec_type <- blotter[i,"Security Type"]
     side <- blotter[i,"Action"]
     trade_shares <- blotter[i,"Quantity"]
     transmit <- blotter[i,"TradeSwitch"]
     
     if(sec_type == "FOREX"){
       transmit <- blotter[i,"TradeSwitch"]
-      tgt_curr <- blotter[,"LocalTicker"]
+      tgt_curr <- blotter[,"Symbol"]
       tgt_value <- blotter[,"Quantity"]
       curr_balance <- UtilFindCashBalance(tgt_curr)
       
@@ -170,7 +170,7 @@ UtilTradeWithIB <- function(blotter){
                         Time = trade_time,
                         TradeMode = acct,
                         ApplicationStatus = app_sta,
-                        Msg = paste0(sec_type, " trade (",curr_trd_id, ") ", ticker, " - ", currency," is successfully traded (", side, ") at ",
+                        Msg = paste0(sec_type, " trade (",curr_trd_id, ") ", ticker, " - ", curr," is successfully traded (", side, ") at ",
                                      trade_date, " ", trade_time),
                         stringsAsFactors = FALSE)
     } else {
@@ -189,47 +189,13 @@ UtilTradeWithIB <- function(blotter){
                         Time = trade_time,
                         TradeMode = acct,
                         ApplicationStatus = app_sta,
-                        Msg = paste0(sec_type, " trade (",curr_trd_id, ") ", ticker, " - ", currency," is successfully traded (", side, ") at ",
+                        Msg = paste0(sec_type, " trade (",curr_trd_id, ") ", ticker, " - ", curr," is successfully traded (", side, ") at ",
                                     trade_date, " ", trade_time),
                         stringsAsFactors = FALSE)
     }
 
   }
   return(list(trade_rec = trade_res, msg_rec = msg))
-}
-
-#
-# Trade forex functions
-#
-UtilTradeForexWithIB <- function(blotter){
-
-  for(i in 1:nrow(blotter)){
-    curr_us_balance <- UtilFindCurrentHolding("USD")
-    curr_ca_balance <- UtilFindCurrentHolding("CAD")
-    
-    transmit <- blotter[i,"TradeSwitch"]
-    tgt_curr <- blotter[,"LocalTicker"]
-    tgt_value <- blotter[,"Quantity"]
-    curr_balance <- UtilFindCurrentHolding(tgt_curr)
-    
-    expected_balance <- curr_balance + tgt_value
-    
-    # ts_static <<- TradingSession(22, platform, acct)
-    ts_static$
-      TSSetTransmit(transmit)$
-      TSSetPrelimTradeList(blotter[i,])$
-      TSGenFnlTradeList()$
-      TSExecuteAllTrades()
-    
-    actual_balance <- UtilFindCurrentHolding(tgt_curr)
-    
-    if(actual_balance >= expected_balance) {
-      res <- "Successful"
-    } else {
-      res <- "Failed"
-    }
-  }
-  return(res)
 }
 
 #
@@ -254,7 +220,7 @@ UtilGetMarketReturn <- function(watchlist){
   #
   start.date <- as.Date("2013-01-01") 
   end.date <- Sys.Date()
-  ei.etf.keys <- paste("$", watchlist$LocalTicker, sep="")
+  ei.etf.keys <- paste("$", watchlist$Symbol, sep="")
   
   #
   # Retrieve quotes
@@ -264,7 +230,7 @@ UtilGetMarketReturn <- function(watchlist){
   fshd1 <- FSHDSetWatchlist(fshd1, watchlist)
   fshd1 <- FSHDObtainAllHistPrcs(fshd1)
   ei.etf <- fshd1$FSHD_hist_cumret
-  colnames(ei.etf) <- paste0(watchlist$Comments, " (", watchlist$LocalTicker, ")")
+  colnames(ei.etf) <- paste0(watchlist$Comments, " (", watchlist$Symbol, ")")
   
   return(ei.etf)
 }
@@ -285,9 +251,9 @@ UtilGetStockHistReturn <- function(ticker_w_crncy){
     currency <- substr(ticker_w_crncy, pos+1, nchar(ticker_w_crncy))
   }
   
-  watchlist <- data.frame(LocalTicker = ticker,
+  watchlist <- data.frame(Symbol = ticker,
                           Currency = currency,
-                          SecurityType = 'STK',
+                          `Security Type` = 'STK',
                           Comments = 'None',
                           stringsAsFactors = FALSE)
   

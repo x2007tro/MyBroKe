@@ -69,7 +69,7 @@ observeEvent(input$request_forex, {
 # handling forex trade
 #
 observeEvent(input$trade_forex, {
-  blotter <- data.frame(LocalTicker = input$tgt_curr,
+  blotter <- data.frame(Symbol = input$tgt_curr,
                         Right = "",
                         Expiry = "",
                         Strike = 0,
@@ -78,10 +78,11 @@ observeEvent(input$trade_forex, {
                         Quantity = input$tgt_val,
                         OrderType = "",
                         LimitPrice = 0,
-                        SecurityType = "FOREX",
+                        `Security Type` = "FOREX",
                         Currency = input$req_curr,
                         TradeSwitch = input$forex_trade_transmit,
-                        stringsAsFactors = FALSE)
+                        stringsAsFactors = FALSE,
+                        check.names = FALSE)
   
   withProgress(message = 'Trading in progress ...', {
     res <- UtilTradeWithIB(blotter)

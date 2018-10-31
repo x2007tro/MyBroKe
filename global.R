@@ -63,6 +63,7 @@ quandl_key <- api_tbl[api_tbl$APIName == "quandl","APIKey"]
 # Load economic indicators from DB
 #
 watchlist <- ReadDataFromSS(db_obj, "MyBroKe_Watchlist")
+colnames(watchlist) <- c("Symbol","Currency","Security Type","Comments")
 gei_lookup <- ReadDataFromSS(db_obj, "MyBroKe_GeneralEI")
 lei_lookup <- ReadDataFromSS(db_obj, "MyBroKe_LeadingEI")
 coi_lookup <- ReadDataFromSS(db_obj, "MyBroKe_CoincidentEI")
