@@ -5,7 +5,7 @@ eiAutoUpdate <- reactiveTimer(ei_refresh_time)
 
 ei_data <- reactive({
   eiAutoUpdate()
-  withProgress(message = 'Get economic indicators data ...', {
+  withProgress(message = 'Getting economic indicators data ...', {
     ei_data <- UtilGetEconIndicators(ei_fred, ei_quandl)
   })
   

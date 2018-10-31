@@ -14,7 +14,7 @@ observeEvent(input$ticker_search_submit, {
   })
   
   output$hist_return <- renderPlot({
-    withProgress(message = 'Get historical stock price ...', {
+    withProgress(message = 'Getting historical stock price ...', {
       hist_ret <- UtilGetStockHistReturn(tik)
     })
     
