@@ -17,7 +17,7 @@ sql_tbls <- reactive({
 # handling past trades
 #
 output$past_trades <- DT::renderDataTable({
-  trades <- sql_tbls$trade_hist
+  trades <- sql_tbls()$trade_hist
   DT::datatable(
     trades, 
     options = list(
@@ -33,7 +33,7 @@ output$past_trades <- DT::renderDataTable({
 # realized profit
 #
 output$real_profit <- DT::renderDataTable({
-  rpft <- sql_tbls$rprofit
+  rpft <- sql_tbls()$rprofit
   DT::datatable(
     rpft,
     options = list(
@@ -77,7 +77,7 @@ output$real_profit <- DT::renderDataTable({
 # Err log
 #
 output$err_log <- DT::renderDataTable({
-  log <- sql_tbls$err_log
+  log <- sql_tbls()$err_log
   DT::datatable(
     log,
     options = list(
@@ -102,7 +102,7 @@ output$err_log <- DT::renderDataTable({
 # handling past messages
 #
 output$past_messages <- DT::renderDataTable({
-  messages <- sql_tbls$trade_msg
+  messages <- sql_tbls()$trade_msg
   DT::datatable(
     messages, 
     options = list(
