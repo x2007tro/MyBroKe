@@ -51,7 +51,7 @@ mainServer <- function(input, output, session) {
   ##
   # account
   ##
-  source("./iServer/account_balannce.R", local = TRUE)
+  source("./iServer/account_balance.R", local = TRUE)
   
   ##
   # account
