@@ -44,12 +44,12 @@ output$real_profit <- DT::renderDataTable({
     )
   ) %>% 
     DT::formatStyle(
-      "Security Type",
+      "Security.Type",
       fontWeight = "bold",
       color = "gray",
       backgroundColor = DT::styleEqual(
         unique(rpft$`Security Type`),
-        brewed_colors[1:length(unique(rpft$`Security Type`))]
+        brewed_colors[1:length(unique(rpft$`Security.Type`))]
       )
     ) %>% 
     DT::formatStyle(
