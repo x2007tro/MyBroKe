@@ -43,5 +43,14 @@ output$err_log <- DT::renderDataTable({
       searching = TRUE,
       paging = TRUE
     )
+  ) %>% 
+    DT::formatStyle(
+    "Type",
+    fontWeight = "bold",
+    color = "gray",
+    backgroundColor = DT::styleEqual(
+      unique(log$Type),
+      brewed_colors[1:length(unique(log$Type))]
+    )
   )
 })
