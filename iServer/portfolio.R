@@ -117,6 +117,7 @@ output$portfolio_cash_balance <- DT::renderDataTable({
         brewed_colors[1:length(unique(tbl2dis$Currency))]
       )
     ) %>%
+    DT::formatCurrency("Exchange Rate", currency = "", digits = 4) %>% 
     DT::formatCurrency(c("Balance", "CAD Balance"), currency = "$", digits = 0)
 })
 

@@ -1,7 +1,7 @@
 ##
 # Trade hist tabpanel
-trade_hist_tp <- tabPanel(
-  "Account Activity",
+account_activity_tp <- tabPanel(
+  "Activity",
   
   tabsetPanel(
     tabPanel(

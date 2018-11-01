@@ -1,7 +1,7 @@
 ##
 # Source all ui files
 ##
-ui_files <- c("portfolio", "account", "watchlist", "trade_hist", "download",
+ui_files <- c("portfolio", "account_balance", "watchlist", "account_activity", "download",
               "blotter_forex", "blotter_equity", "blotter_option", "blotter_future",
               "market_trend", "market_news", "ei", "report_perfor",
               "dev", "conf", "guide")
@@ -32,9 +32,9 @@ mainUI <- fluidPage(theme = shinythemes::shinytheme("simplex"),
         
         "Account",
         portfolio_tp,
-        account_tp,
+        balance_tp,
         watchlist_tp,
-        trade_hist_tp,
+        account_activity_tp,
         download_tp,
         
         "Report",

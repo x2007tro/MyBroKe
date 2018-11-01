@@ -51,7 +51,7 @@ mainServer <- function(input, output, session) {
   ##
   # account
   ##
-  source("./iServer/account.R", local = TRUE)
+  source("./iServer/account_balannce.R", local = TRUE)
   
   ##
   # account
@@ -61,7 +61,7 @@ mainServer <- function(input, output, session) {
   ##
   # trade history
   ##
-  source("./iServer/trade_hist.R", local = TRUE)
+  source("./iServer/account_activity.R", local = TRUE)
   
   ##
   # conf
