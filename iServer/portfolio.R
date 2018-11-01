@@ -45,14 +45,14 @@ output$portfolio_holding_nonforex <- DT::renderDataTable({
       color = "gray",
       backgroundColor = DT::styleEqual(
         unique(tbl2dis$`Security Type`),
-        RColorBrewer::brewer.pal(n = 12, name = "Set3")[1:length(unique(tbl2dis$`Security Type`))]
+        brewed_colors[1:length(unique(tbl2dis$`Security Type`))]
       )
     ) %>%
     DT::formatCurrency("Position", currency = "", digits = 0) %>% 
-    DT::formatCurrency(c("Cost", "Market Price", "Market Value", "Unrealized Profit"), currency = "$", digits = 0) %>% 
+    DT::formatCurrency(c("Cost", "Market Price", "Market Value", "Unrealized Profit", "Realized Profit"), currency = "$", digits = 2) %>% 
     DT::formatPercentage("Unrealized Change%", 2) %>% 
     DT::formatStyle(
-      c("Unrealized Profit", "Unrealized Change%"),
+      c("Unrealized Profit", "Unrealized Change%", "Realized Profit"),
       fontWeight = "bold",
       #color = "white",
       color = DT::styleInterval(
@@ -79,15 +79,15 @@ output$portfolio_holding_forex <- DT::renderDataTable({
       color = "gray",
       backgroundColor = DT::styleEqual(
         unique(tbl2dis$`Security Type`),
-        RColorBrewer::brewer.pal(n = 12, name = "Set3")[1:length(unique(tbl2dis$`Security Type`))]
+        brewed_colors[1:length(unique(tbl2dis$`Security Type`))]
       )
     ) %>%
     DT::formatCurrency("Position", currency = "", digits = 0) %>% 
     DT::formatCurrency(c("Cost", "Market Price"), currency = "", digits = 5) %>% 
-    DT::formatCurrency(c("Market Value", "Unrealized Profit", "Realized Profit"), currency = "$", digits = 0) %>% 
+    DT::formatCurrency(c("Market Value", "Unrealized Profit", "Realized Profit"), currency = "$", digits = 2) %>% 
     DT::formatPercentage("Unrealized Change%", 2) %>% 
     DT::formatStyle(
-      c("Unrealized Profit", "Unrealized Change%"),
+      c("Unrealized Profit", "Realized Profit", "Unrealized Change%"),
       fontWeight = "bold",
       #color = "white",
       color = DT::styleInterval(
@@ -118,7 +118,7 @@ output$portfolio_cash_balance <- DT::renderDataTable({
       )
     ) %>%
     DT::formatCurrency("Exchange Rate", currency = "", digits = 4) %>% 
-    DT::formatCurrency(c("Balance", "CAD Balance"), currency = "$", digits = 0)
+    DT::formatCurrency(c("Balance", "CAD Balance"), currency = "$", digits = 2)
 })
 
 #

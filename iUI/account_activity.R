@@ -15,12 +15,12 @@ account_activity_tp <- tabPanel(
       )
     ),
     tabPanel(
-      "Past Messages",
+      "Realized Profit",
       tags$br(),
       fluidRow(
         column(
           12,
-          DT::dataTableOutput("past_messages")     
+          DT::dataTableOutput("real_profit")
         )
       )
     ),
@@ -31,6 +31,16 @@ account_activity_tp <- tabPanel(
         column(
           12,
           DT::dataTableOutput("err_log")
+        )
+      )
+    ),
+    tabPanel(
+      "Past Messages",
+      tags$br(),
+      fluidRow(
+        column(
+          12,
+          DT::dataTableOutput("past_messages")     
         )
       )
     )

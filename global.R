@@ -16,19 +16,19 @@ blotter_field_default_width_wide <- "250px"
 
 # equity blotter
 eq_max_blotter_size <- 10
-eq_max_message_count <- 3
+eq_max_message_count <- 10
 eq_blotter_size_tracker <- 1
 eq_message_count_trader <- 1
 
 # option blotter
 opt_max_blotter_size <- 10
-opt_max_message_count <- 3
+opt_max_message_count <- 10
 opt_blotter_size_tracker <- 1
 opt_message_count_trader <- 1
 
 # option blotter
 fut_max_blotter_size <- 10
-fut_max_message_count <- 3
+fut_max_message_count <- 10
 fut_blotter_size_tracker <- 1
 fut_message_count_trader <- 1
 
