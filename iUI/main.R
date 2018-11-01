@@ -4,7 +4,7 @@
 ui_files <- c("portfolio", "account", "watchlist", "trade_hist", "download",
               "blotter_forex", "blotter_equity", "blotter_option", "blotter_future",
               "market_trend", "market_news", "ei", "report_perfor",
-              "dev", "conf")
+              "dev", "conf", "guide")
 lapply(ui_files, function(f){
   source(paste0("./iUI/", f, ".R"), local = FALSE)
 })
@@ -51,6 +51,13 @@ mainUI <- fluidPage(theme = shinythemes::shinytheme("simplex"),
         #market_news_tp,
         ei_tp
       )
+    ),
+    
+    ##
+    # Development panel
+    tabPanel(
+      "Guide",
+      guide_tp
     ),
 
     ##

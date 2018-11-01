@@ -121,6 +121,6 @@
 #x <- UtilGetEconIndicators(ei_fred, ei_quandl)
 #x <- UtilGetMarketReturn(watchlist)
 #x <- UtilGetStockLastestPrice("AAPL-USD")
-x <- UtilGetStockHistPrcAndRet("AAPL-USD")
+#x <- UtilGetStockHistPrcAndRet("AAPL-USD")
 #UtilPlotMarketReturn(x$cumret, "AAPL-USD", "1Y")
-UtilPlotMarketPrice(x$prc, "AAPL-USD", "1Y")
+#UtilPlotMarketPrice(x$prc, "AAPL-USD", "1Y")

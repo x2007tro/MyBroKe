@@ -77,6 +77,7 @@ UtilTradeWithIB <- function(blotter){
     curr <- blotter[i,"Currency"]
     sec_type <- blotter[i,"Security Type"]
     side <- blotter[i,"Action"]
+    order_type <- blotter[,"OrderType"]
     trade_shares <- blotter[i,"Quantity"]
     transmit <- blotter[i,"TradeSwitch"]
     
@@ -170,7 +171,7 @@ UtilTradeWithIB <- function(blotter){
                         Time = trade_time,
                         TradeMode = acct,
                         ApplicationStatus = app_sta,
-                        Msg = paste0(sec_type, " trade (",curr_trd_id, ") ", ticker, " - ", curr," is successfully traded (", side, ") at ",
+                        Msg = paste0(sec_type, " ", order_type, " trade (",curr_trd_id, ") ", ticker, " - ", curr," is successfully traded (", side, ") at ",
                                      trade_date, " ", trade_time),
                         stringsAsFactors = FALSE)
     } else {
@@ -189,7 +190,7 @@ UtilTradeWithIB <- function(blotter){
                         Time = trade_time,
                         TradeMode = acct,
                         ApplicationStatus = app_sta,
-                        Msg = paste0(sec_type, " trade (",curr_trd_id, ") ", ticker, " - ", curr," is not successfully traded (", side, ") at ",
+                        Msg = paste0(sec_type, " ", order_type, " trade (",curr_trd_id, ") ", ticker, " - ", curr," is not successfully traded (", side, ") at ",
                                     trade_date, " ", trade_time),
                         stringsAsFactors = FALSE)
     }

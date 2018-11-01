@@ -1,7 +1,7 @@
 ##
 # Account tab
 account_tp <- tabPanel(
-  "Account",
+  "Balance",
   
   tabsetPanel(
     

@@ -76,7 +76,7 @@ observeEvent(input$trade_forex, {
                         Expiry = "",
                         Strike = 0,
                         Exchange = "",
-                        Action = "",
+                        Action = "exchange",
                         Quantity = input$tgt_val,
                         OrderType = "",
                         LimitPrice = 0,
