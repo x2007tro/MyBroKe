@@ -23,17 +23,17 @@ account_activity_tp <- tabPanel(
           DT::dataTableOutput("past_messages")     
         )
       )
+    ),
+    tabPanel(
+      "Log",
+      tags$br(),
+      fluidRow(
+        column(
+          12,
+          DT::dataTableOutput("err_log")
+        )
+      )
     )
-    # tabPanel(
-    #   "Error Log",
-    #   tags$br(),
-    #   fluidRow(
-    #     column(
-    #       12,
-    #       DT::dataTableOutput("err_log")     
-    #     )
-    #   )
-    # )
   )
   
 )

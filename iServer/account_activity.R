@@ -30,18 +30,18 @@ output$past_messages <- DT::renderDataTable({
   )
 })
 
-# #
-# # Err log
-# #
-# output$err_log <- DT::renderDataTable({
-#   log <- ReadDataFromSS(db_obj, "MyBroKe_ErrorLog")
-#   DT::datatable(
-#     log, 
-#     options = list(
-#       pageLength = 10,
-#       orderClasses = TRUE,
-#       searching = TRUE,
-#       paging = TRUE
-#     )
-#   )
-# })
+#
+# Err log
+#
+output$err_log <- DT::renderDataTable({
+  log <- ReadDataFromSS(db_obj, "100_510_ErrorLog")
+  DT::datatable(
+    log,
+    options = list(
+      pageLength = 10,
+      orderClasses = TRUE,
+      searching = TRUE,
+      paging = TRUE
+    )
+  )
+})
