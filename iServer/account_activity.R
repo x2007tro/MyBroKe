@@ -21,7 +21,7 @@ output$past_trades <- DT::renderDataTable({
   DT::datatable(
     trades, 
     options = list(
-      pageLength = 10,
+      pageLength = 20,
       orderClasses = TRUE,
       searching = TRUE,
       paging = TRUE
@@ -37,7 +37,7 @@ output$real_profit <- DT::renderDataTable({
   DT::datatable(
     rpft,
     options = list(
-      pageLength = 10,
+      pageLength = 20,
       orderClasses = TRUE,
       searching = TRUE,
       paging = TRUE
@@ -81,7 +81,7 @@ output$err_log <- DT::renderDataTable({
   DT::datatable(
     log,
     options = list(
-      pageLength = 10,
+      pageLength = 20,
       orderClasses = TRUE,
       searching = TRUE,
       paging = TRUE
@@ -106,7 +106,7 @@ output$past_messages <- DT::renderDataTable({
   DT::datatable(
     messages, 
     options = list(
-      pageLength = 10,
+      pageLength = 20,
       orderClasses = TRUE,
       searching = TRUE,
       paging = TRUE
