@@ -84,7 +84,7 @@ output$portfolio_holding_forex <- DT::renderDataTable({
     ) %>%
     DT::formatCurrency("Position", currency = "", digits = 0) %>% 
     DT::formatCurrency(c("Cost", "Market Price"), currency = "", digits = 5) %>% 
-    DT::formatCurrency(c("Market Value", "Unrealized Profit"), currency = "$", digits = 0) %>% 
+    DT::formatCurrency(c("Market Value", "Unrealized Profit", "Realized Profit"), currency = "$", digits = 0) %>% 
     DT::formatPercentage("Unrealized Change%", 2) %>% 
     DT::formatStyle(
       c("Unrealized Profit", "Unrealized Change%"),
