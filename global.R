@@ -2,7 +2,7 @@
 # IB Trading specific variables
 #
 platform <- "IBG"     # Options: TWS, IBG
-acct <- "Paper"    # Options: Live, Paper
+acct <- "Live"    # Options: Live, Paper
 app_sta <- "Test"
 trade_time_limit <- 10
 active_trade_ids <- c()
@@ -63,7 +63,10 @@ quandl_key <- api_tbl[api_tbl$APIName == "quandl","APIKey"]
 # Load economic indicators from DB
 #
 watchlist <- ReadDataFromSS(db_obj, "MyBroKe_Watchlist")
-colnames(watchlist) <- c("Symbol","Currency","Security Type","Comments")
+colnames(watchlist) <- c("Symbol","Currency","Security Type","Valid","Comments")
+watchlist <- watchlist %>% 
+  filter(Valid == 1) %>% 
+  select(c("Symbol","Currency","Security Type","Comments"))
 gei_lookup <- ReadDataFromSS(db_obj, "MyBroKe_GeneralEI")
 lei_lookup <- ReadDataFromSS(db_obj, "MyBroKe_LeadingEI")
 coi_lookup <- ReadDataFromSS(db_obj, "MyBroKe_CoincidentEI")
