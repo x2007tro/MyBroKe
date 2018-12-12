@@ -5,11 +5,27 @@ autoUpdate <- reactiveTimer(refresh_time)
 
 sql_tbls <- reactive({
   autoUpdate()
+  
+  trade_hist_qry <- paste0("SELECT * FROM [WebappAdmin].[dbo].[MyBroKe_TradeHistory] WHERE
+                           [ApplicationStatus] = '", ts_static$ts_app_status,
+                           "' AND [TradeMode] = '", ts_static$ts_trade_mode,"' ORDER BY [Date] DESC")
+  
+  trade_msg_qry <- paste0("SELECT * FROM [WebappAdmin].[dbo].[MyBroKe_TradeMessage] WHERE
+                           [ApplicationStatus] = '", ts_static$ts_app_status,
+                           "' AND [TradeMode] = '", ts_static$ts_trade_mode,"' ORDER BY [Date] DESC")
+  
+  err_log_qry <- paste0("SELECT * FROM [WebappAdmin].[dbo].[MyBroKe_ErrorLog] WHERE
+                           [ApplicationStatus] = '", ts_static$ts_app_status,
+                           "' AND [TradeMode] = '", ts_static$ts_trade_mode,"' ORDER BY [Timestamp] DESC")
+  
+  profit_hist_qry <- paste0("SELECT * FROM [WebappAdmin].[dbo].[MyBroKe_RealizedProfitHistory] WHERE
+                           [Application Status] = '", ts_static$ts_app_status,
+                           "' AND [Trade Mode] = '", ts_static$ts_trade_mode,"' ORDER BY [Market Datetime] DESC")
   res <- list(
-    trade_hist = ReadDataFromSS(db_obj, "MyBroKe_TradeHistory"),
-    trade_msg = ReadDataFromSS(db_obj, "MyBroKe_TradeMessage"),
-    err_log = ReadDataFromSS(db_obj, "100_510_ErrorLog"),
-    rprofit = ReadDataFromSS(db_obj, "100_710_RealizedProfitHistory")
+    trade_hist = GetQueryResFromSS(db_obj, trade_hist_qry),
+    trade_msg = GetQueryResFromSS(db_obj, trade_msg_qry),
+    err_log = GetQueryResFromSS(db_obj, err_log_qry),
+    rprofit = GetQueryResFromSS(db_obj, profit_hist_qry)
   )
 })
 

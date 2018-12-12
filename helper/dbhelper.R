@@ -25,7 +25,6 @@ ReadDataFromSS <- function(db_obj, tbl_name){
   return(df)
 }
 
-
 ReadDataFromSS_sql <- function(db_obj, tbl_name){
   conn <- ConnSqlServerSharedData(db_obj)
   df <- DBI::dbReadTable(conn, tbl_name)
@@ -51,4 +50,16 @@ ListTblsFromSS <- function(db_obj){
   dfs_tn <- DBI::dbListTables(conn, scheme = "dbo")
   DBI::dbDisconnect(conn)
   return(dfs_tn)
+}
+
+##
+# Send query to db
+##
+GetQueryResFromSS <- function(db_obj, qry_str){
+  conn <- ConnSqlServer(db_obj)
+  qry_conn <- DBI::dbSendQuery(conn, qry_str)
+  res <- DBI::dbFetch(qry_conn)
+  DBI::dbClearResult(qry_conn)
+  DBI::dbDisconnect(conn)
+  return(res)
 }

@@ -1,9 +1,8 @@
 #
 # IB Trading specific variables
 #
-platform <- "IBG"     # Options: TWS, IBG
-acct <- "Live"    # Options: Live, Paper
-app_sta <- "Test"
+platform <- c("IBG", "TWS")[1]     # Options: TWS, IBG
+acct <- c("Live", "Paper")[1]    # Options: Live, Paper
 trade_time_limit <- 10
 active_trade_ids <- c()
 brewed_colors <- rep(RColorBrewer::brewer.pal(n = 9, name = "Set3"), 100)
