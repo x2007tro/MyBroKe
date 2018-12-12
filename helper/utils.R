@@ -163,14 +163,14 @@ UtilTradeWithIB <- function(blotter){
       trade_res$Time <- trade_time
       trade_res$Result <- "Success"
       trade_res$TradeID <- curr_trd_id
-      trade_res$TradeMode <- acct
-      trade_res$ApplicationStatus <- app_sta
+      trade_res$TradeMode <- ts_static$ts_account_type
+      trade_res$ApplicationStatus <- ts_static$ts_app_status
       trade_res <- trade_res[,c(ncol(trade_res),1:(ncol(trade_res)-1))]
       
       msg <- data.frame(Date = trade_date,
                         Time = trade_time,
                         TradeMode = acct,
-                        ApplicationStatus = app_sta,
+                        ApplicationStatus = ts_static$ts_app_status,
                         Msg = paste0(sec_type, " ", order_type, " trade (",curr_trd_id, ") ", ticker, " - ", curr," is successfully traded (", side, ") at ",
                                      trade_date, " ", trade_time),
                         stringsAsFactors = FALSE)
@@ -182,14 +182,14 @@ UtilTradeWithIB <- function(blotter){
       trade_res$Time <- trade_time
       trade_res$Result <- "Failed"
       trade_res$TradeID <- curr_trd_id
-      trade_res$TradeMode <- acct
-      trade_res$ApplicationStatus <- app_sta
+      trade_res$TradeMode <- ts_static$ts_account_type
+      trade_res$ApplicationStatus <- ts_static$ts_app_status
       trade_res <- trade_res[,c(ncol(trade_res),1:(ncol(trade_res)-1))]
       
       msg <- data.frame(Date = trade_date,
                         Time = trade_time,
                         TradeMode = acct,
-                        ApplicationStatus = app_sta,
+                        ApplicationStatus = ts_static$ts_app_status,
                         Msg = paste0(sec_type, " ", order_type, " trade (",curr_trd_id, ") ", ticker, " - ", curr," is not successfully traded (", side, ") at ",
                                     trade_date, " ", trade_time),
                         stringsAsFactors = FALSE)
