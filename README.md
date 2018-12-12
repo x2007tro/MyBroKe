@@ -23,3 +23,4 @@ This connects to IB TWS/Gateway and make trades
 - require(quantmod)
 - require(DBI)
 - require(odbc)
+- require(RMariaDB)

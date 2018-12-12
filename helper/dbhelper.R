@@ -16,26 +16,33 @@ ConnSqlServer <- function(db_obj){
 }
 
 ##
+# Connect to MariaDB using connection string
+##
+ConnMySql <- function(db_obj){
+  conn <- DBI::dbConnect(drv = RMariaDB::MariaDB(),
+                         user = db_obj$id,
+                         password = db_obj$pwd,
+                         dbname = db_obj$dbn,
+                         host = db_obj$srv,
+                         port = db_obj$prt)
+  return(conn)
+}
+
+##
 # Read a table from sel server db
 ##
 ReadDataFromSS <- function(db_obj, tbl_name){
-  conn <- ConnSqlServer(db_obj)
+  conn <- ConnMySql(db_obj)
   df <- DBI::dbReadTable(conn, tbl_name)
   DBI::dbDisconnect(conn)  
   return(df)
 }
 
-ReadDataFromSS_sql <- function(db_obj, tbl_name){
-  conn <- ConnSqlServerSharedData(db_obj)
-  df <- DBI::dbReadTable(conn, tbl_name)
-  DBI::dbDisconnect(conn)  
-  return(df)
-}
 ##
 # Write a table to sql server db
 ##
 WriteDataToSS <- function(db_obj, data, tbl_name, apd = FALSE){
-  conn <- ConnSqlServer(db_obj)
+  conn <- ConnMySql(db_obj)
   df <- DBI::dbWriteTable(conn, name = tbl_name, value = data,
                           append = apd, overwrite = !apd, row.names = FALSE)
   DBI::dbDisconnect(conn) 				  
@@ -46,7 +53,7 @@ WriteDataToSS <- function(db_obj, data, tbl_name, apd = FALSE){
 # List all tables and queries
 ##
 ListTblsFromSS <- function(db_obj){
-  conn <- ConnSqlServer(db_obj)
+  conn <- ConnMySql(db_obj)
   dfs_tn <- DBI::dbListTables(conn, scheme = "dbo")
   DBI::dbDisconnect(conn)
   return(dfs_tn)
@@ -56,7 +63,7 @@ ListTblsFromSS <- function(db_obj){
 # Send query to db
 ##
 GetQueryResFromSS <- function(db_obj, qry_str){
-  conn <- ConnSqlServer(db_obj)
+  conn <- ConnMySql(db_obj)
   qry_conn <- DBI::dbSendQuery(conn, qry_str)
   res <- DBI::dbFetch(qry_conn)
   DBI::dbClearResult(qry_conn)
