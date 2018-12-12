@@ -19,9 +19,9 @@ sql_tbls <- reactive({
                         "' AND `TradeMode` = '", ts_static$ts_trade_mode,
                         "' AND `Type` <> 'Info' ORDER BY `Timestamp` DESC")
   
-  profit_hist_qry <- paste0("SELECT * FROM `WebappAdmin`.`MyBroKe_RealizedProfitHistory` WHERE
+  profit_hist_qry <- paste0("SELECT * FROM `WebappAdmin`.`100_710_RealizedProfitHistory` WHERE
                            `Application Status` = '", ts_static$ts_app_status,
-                           "' AND `Trade Mode` = '", ts_static$ts_trade_mode,"' ORDER BY `Market Datetime` DESC")
+                           "' AND `Trade Mode` = '", ts_static$ts_trade_mode,"' ORDER BY `Market Date` DESC")
   res <- list(
     trade_hist = GetQueryResFromSS(db_obj, trade_hist_qry),
     trade_msg = GetQueryResFromSS(db_obj, trade_msg_qry),
