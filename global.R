@@ -2,7 +2,7 @@
 # IB Trading specific variables
 #
 platform <- c("IBG", "TWS")[1]     # Options: TWS, IBG
-acct <- c("Live", "Paper")[1]    # Options: Live, Paper
+acct <- c("Live", "Paper")[2]    # Options: Live, Paper
 trade_time_limit <- 10
 active_trade_ids <- c()
 brewed_colors <- rep(RColorBrewer::brewer.pal(n = 9, name = "Set3"), 100)
@@ -10,6 +10,7 @@ brewed_colors <- rep(RColorBrewer::brewer.pal(n = 9, name = "Set3"), 100)
 #
 # Common parameters for server and ui
 #
+button_field_default_width <- "100px"
 blotter_field_default_width <- "150px"
 blotter_field_default_width_wide <- "250px"
 
