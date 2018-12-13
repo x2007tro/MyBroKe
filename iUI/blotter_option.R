@@ -90,6 +90,13 @@ option_blotter_tp <- tabPanel(
       DT::dataTableOutput("opt_cd")
     ),
     
+    ## 
+    # History tabPanel
+    tabPanel(
+      "Option Chain History",
+      DT::dataTableOutput("opt_yoc")
+    ),
+    
     tabPanel(
       "Config",
       
@@ -99,6 +106,12 @@ option_blotter_tp <- tabPanel(
           tags$br(),
           shypka.ddiv(
             selectInput("opt_blotter_size_selector", tags$b("Slot Size"), choices = 1:10, selected = 1, width = blotter_field_default_width)
+          ),
+          shypka.ddiv(
+            selectInput("opt_yoc_ndays", tags$b("How Far Away (days)"), choices = 1:90, selected = 5, width = blotter_field_default_width)
+          ),
+          shypka.ddiv(
+            selectInput("opt_yoc_qry_lmt", tags$b("Option Query Row Limit"), choices = c(10, 50, 100, 200, 500, 1000), selected = 50, width = blotter_field_default_width)
           )
         )
       )

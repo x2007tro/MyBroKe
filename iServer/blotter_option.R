@@ -31,6 +31,7 @@ observeEvent(input$opt_blotter_size_selector,{
         tags$div(class = "blotter_fields", textInput(paste0('opt_trade_value',i), "Trade Value", value = "0", width = blotter_field_default_width)),
         tags$div(class = "blotter_fields", style = "padding-top:20px", checkboxInput(paste0('opt_transmit',i), "Transmit", value = FALSE, width = blotter_field_default_width)),
         tags$div(class = "blotter_fields_wide", style = "padding-top:20px", actionButton(class = "btn-primary", paste0('opt_reqc',i), "Request", width = blotter_field_default_width)),
+        tags$div(class = "blotter_fields_wide", style = "padding-top:20px", actionButton(class = "btn-primary", paste0('opt_reqyoc',i), "YOC", width = blotter_field_default_width)),
         tags$div(class = "blotter_fields_wide", style = "padding-top:20px", actionButton(class = "btn-primary", paste0('opt_trade',i), "Trade", width = blotter_field_default_width))
       )
     })
@@ -127,6 +128,40 @@ lapply(1:opt_max_blotter_size, function(i){
       updateSelectInput(session, paste0('opt_currency',i), choices = res$Currency) 
     }
     
+  })
+  
+  observeEvent(input[[paste0("opt_reqyoc",i)]],{
+    
+    withProgress(message = 'Retrieving yahoo option chain ...', {
+      # Process option data from DB
+      yoc_str <- paste0(
+        "SELECT * FROM FinDB.kmin_yoc WHERE ",
+        "Symbol = '", input[[paste0('opt_ticker',i)]], "' AND ",
+        "ExpDate = '", as.Date(input[[paste0('opt_expiry',i)]], format = "%Y%m%d"), "' AND ",
+        "LEFT(Type, 1) = '", input[[paste0('opt_right',i)]], "' AND ",
+        "Strike = ", paste0(input[[paste0('opt_strike',i)]]), " AND ",
+        "MarketDatetime >= '", Sys.Date() - as.numeric(input$opt_yoc_ndays), "' ",
+        "LIMIT ", min(10 + as.numeric(input$opt_yoc_ndays)*10, as.numeric(input$opt_yoc_qry_lmt))
+        #"ORDER BY MarketDatetime DESC"
+      )
+
+      # retrieve data from DB
+      res <- GetQueryResFromSS(db_obj, yoc_str)
+      if(nrow(res) > 0) res <- res[order(res$MarketDatetime, decreasing = TRUE),]
+    })
+    
+    # Render contract details
+    output$opt_yoc <- DT::renderDataTable({
+      DT::datatable(
+        res, 
+        options = list(
+          pageLength = 20,
+          orderClasses = TRUE,
+          searching = TRUE,
+          paging = TRUE
+        ) 
+      ) 
+    })
   })
 })
   
