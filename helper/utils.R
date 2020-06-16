@@ -13,8 +13,8 @@ UtilGetPortfolio <- function(){
     TSCloseTradingSession()
   
   return(list(update_datetime = Sys.time(),
-              holdings_nonforex = ts_tmp$ts_port_holdings_nonforex %>% dplyr::mutate(`Unrealized Change%` = `Market Price`/Cost - 1),
-              holdings_forex = ts_tmp$ts_port_holdings_forex %>% dplyr::mutate(`Unrealized Change%` = `Market Price`/Cost - 1),
+              holdings_nonforex = ts_tmp$ts_port_holdings_nonforex %>% dplyr::mutate(`Unrealized Change%` = (`Market Price` - Cost)/abs(Cost)),
+              holdings_forex = ts_tmp$ts_port_holdings_forex %>% dplyr::mutate(`Unrealized Change%` = (`Market Price` - Cost)/abs(Cost)),
               port_into = ts_tmp$ts_port_info,
               cash_balance = ts_tmp$ts_cash_balance,
               ts_acc_recon = ts_tmp$ts_acc_recon %>% dplyr::select(-`Market Datetime`)))
