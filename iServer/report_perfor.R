@@ -1,14 +1,28 @@
 ##
 # Performance
 ##
-output$cum_ret <- renderPlot({
-  
-  dataset_full <- ReadDataFromSS(db_obj, "100_020_AccountReconciliationHistory")
-  dataset <- dataset_full %>% 
-    dplyr::filter(Security.Type == "NetLiquidation" & Currency == "CAD") %>%
-    dplyr::select(dplyr::one_of(c("NewMarketDate", "CAD.Balance")))
-  
-  prcs <- xts::xts(dataset$CAD.Balance, as.Date(dataset$NewMarketDate))
-  rets <- PerformanceAnalytics::Return.calculate(prcs, method="discrete")[-1,]
+perfor_data <- reactive({
+  withProgress(message = 'Getting portfolio performance data ...', {
+    dataset <- UtilGetPortfPerfor()
+  })
+})
+
+output$perfor_table <- DT::renderDataTable({
+  rets <- perfor_data()$table
+  DT::datatable(
+    rets, 
+    options = list(
+      pageLength = 10,
+      orderClasses = FALSE,
+      searching = TRUE,
+      paging = FALSE
+    )
+  ) %>%
+    DT::formatPercentage('Return', 2)
+})
+
+
+output$perfor_graph <- renderPlot({
+  rets <- perfor_data()$graph
   PerformanceAnalytics::chart.CumReturns(rets, main = "Porfolio Cumulative Return")
 })

@@ -498,6 +498,75 @@ UtilGetEconIndicators <- function(ei_fred, ei_quandl){
   
 }
 
+##
+#
+##
+UtilGetPortfPerfor <- function(){
+
+  qry_str <- "SELECT NewMarketDate, `CAD Balance` FROM WebappAdmin.100_020_AccountReconciliationHistory where `security type` = 'NetLiquidation' and currency = 'CAD'"
+  dataset <- GetQueryResFromSS(db_obj, qry_str)
+  prcs_df <- dataset %>% 
+    dplyr::mutate(MarketDate = as.Date(NewMarketDate), CADBalance = `CAD Balance`) %>% 
+    dplyr::select(MarketDate, CADBalance)
+  
+  ##
+  # table output
+  
+  # date manipulation
+  mkt_dates <- prcs_df$MarketDate
+  ldate <- max(mkt_dates)
+  fdate <- min(mkt_dates)
+  
+  wk_beg <- lubridate::floor_date(ldate, unit = "week")
+  mth_beg <- lubridate::floor_date(ldate, unit = "month")
+  qrt_beg <- lubridate::floor_date(ldate, unit = "quarter")
+  hyr_beg <- lubridate::floor_date(ldate, unit = "halfyear")
+  yr_beg <- lubridate::floor_date(ldate, unit = "year")
+  yrfn_beg <- ldate - 365
+  
+  wk_beg2 <- mkt_dates[max(which(mkt_dates <= wk_beg))]
+  mth_beg2 <- mkt_dates[min(which(mkt_dates >= mth_beg))]
+  qrt_beg2 <- mkt_dates[min(which(mkt_dates >= qrt_beg))]
+  hyr_beg2 <- mkt_dates[min(which(mkt_dates >= hyr_beg))]
+  yr_beg2 <- mkt_dates[min(which(mkt_dates >= yr_beg))]
+  yrfn_beg2 <- mkt_dates[min(which(mkt_dates >= yrfn_beg))]
+  
+  prc_ldate <- prcs_df$CADBalance[mkt_dates == ldate]
+  prc_wk_beg <- prcs_df$CADBalance[mkt_dates == wk_beg2]
+  prc_mth_beg <- prcs_df$CADBalance[mkt_dates == mth_beg2]
+  prc_qrt_beg <- prcs_df$CADBalance[mkt_dates == qrt_beg2]
+  prc_hyr_beg <- prcs_df$CADBalance[mkt_dates == hyr_beg2]
+  prc_yr_beg <- prcs_df$CADBalance[mkt_dates == yr_beg2]
+  prc_yrfn_beg <- prcs_df$CADBalance[mkt_dates == yrfn_beg2]
+  prc_fdate <- prcs_df$CADBalance[mkt_dates == fdate]
+  
+  rets_tbl <- data.frame(
+    `Time Fame` = c("Week2Date", "Month2Date", "Quarter2Date", "HalfYear2Date", "Year2Date", "1 Year From Now", "Since Inception"),
+    `Start Date` = c(wk_beg2, mth_beg2, qrt_beg2, hyr_beg2, yr_beg2, yrfn_beg2, fdate),
+    `End Date` = rep(ldate, 7),
+    `Return` = c(
+      (prc_ldate - prc_wk_beg)/abs(prc_wk_beg),
+      (prc_ldate - prc_mth_beg)/abs(prc_mth_beg),
+      (prc_ldate - prc_qrt_beg)/abs(prc_qrt_beg),
+      (prc_ldate - prc_hyr_beg)/abs(prc_hyr_beg),
+      (prc_ldate - prc_yr_beg)/abs(prc_yr_beg),
+      (prc_ldate - prc_yrfn_beg)/abs(prc_yrfn_beg),
+      (prc_ldate - prc_fdate)/abs(prc_fdate)
+    )
+  )
+  
+  # graph output
+  prcs <- xts::xts(prcs_df$CADBalance, prcs_df$MarketDate)
+  rets_grh <- PerformanceAnalytics::Return.calculate(prcs, method="discrete")[-1,]
+  
+  results <- list(
+    table = rets_tbl,
+    graph = rets_grh
+  )
+  
+  return(results)
+}
+
 #
 # Manual open & close connection
 #

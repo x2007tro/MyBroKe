@@ -5,12 +5,19 @@ perfor_tp <- tabPanel(
   "Performance",
   
   tabsetPanel(
-    # Equity curve
     
+    # return table
     tabPanel(
-      "Return",
+      "Table",
       tags$br(),
-      plotOutput("cum_ret")
+      DT::dataTableOutput("perfor_table")
+    ),
+    
+    # return curve
+    tabPanel(
+      "Graph",
+      tags$br(),
+      plotOutput("perfor_graph")
     )
     # End
   )
