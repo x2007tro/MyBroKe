@@ -572,18 +572,9 @@ UtilGetPortfPerfor <- function(){
   }
   
   yr_cret <- yr_prcs %>% 
-    dplyr::mutate(Return = CADBalance/yr_prcs$CADBalance[1] - 1)
-  
-  yr_cret <- rbind(
-    data.frame(MarketDate = as.Date("1980-01-01"), CADBalance = 0, Return = -0.1),
-    yr_cret
-  ) 
-  
-  yr_cret <- yr_cret %>% 
+    dplyr::mutate(Return = CADBalance/yr_prcs$CADBalance[1] - 1) %>% 
     dplyr::mutate(Regime = ifelse(Return < 0, "Negative", ifelse(Return > 0, "Positive", "Flat")))
   yr_cret$Regime <- factor(yr_cret$Regime, levels = c("Negative", "Positive", "Flat"))
-  
-  #yr_cret <- yr_cret[-1,]
   
   yrfn_cret <- yrfn_prcs %>% 
     dplyr::mutate(Return = CADBalance/yrfn_prcs$CADBalance[1] - 1) %>% 
