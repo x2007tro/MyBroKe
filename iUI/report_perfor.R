@@ -16,8 +16,25 @@ perfor_tp <- tabPanel(
     # return curve
     tabPanel(
       "Graph",
-      tags$br(),
-      plotOutput("perfor_graph")
+      
+      tabsetPanel(
+        tabPanel(
+          "YTD",
+          tags$br(),
+          plotOutput("perfor_graph_ytd")
+        ),
+        tabPanel(
+          "One Year From Now",
+          tags$br(),
+          plotOutput("perfor_graph_yfn")
+        ),
+        tabPanel(
+          "Since Inception",
+          tags$br(),
+          plotOutput("perfor_graph_sinc")
+        )
+      )
+    
     )
     # End
   )

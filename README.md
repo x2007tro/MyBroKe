@@ -24,3 +24,4 @@ This connects to IB TWS/Gateway and make trades
 - require(DBI)
 - require(odbc)
 - require(RMariaDB)
+- require(ggthemes)

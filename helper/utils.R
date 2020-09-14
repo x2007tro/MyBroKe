@@ -556,12 +556,52 @@ UtilGetPortfPerfor <- function(){
   )
   
   # graph output
-  prcs <- xts::xts(prcs_df$CADBalance, prcs_df$MarketDate)
-  rets_grh <- PerformanceAnalytics::Return.calculate(prcs, method="discrete")[-1,]
+  yr_prcs <- prcs_df[prcs_df$MarketDate >= yr_beg,]
+  yrfn_prcs <- prcs_df[prcs_df$MarketDate >= yrfn_beg,]
+  sinc_prcs <- prcs_df
+  
+  # not used yet
+  if(TRUE){
+    yr_prcs_ts <- xts::xts(yr_prcs$CADBalance, yr_prcs$MarketDate)
+    yrfn_prcs_ts <- xts::xts(yrfn_prcs$CADBalance, yrfn_prcs$MarketDate)
+    sinc_prcs_ts <- xts::xts(sinc_prcs$CADBalance, sinc_prcs$MarketDate)
+    
+    yr_prcs <- yr_prcs[c(1, xts::endpoints(yr_prcs_ts, on = "month")[-1]),]
+    yrfn_prcs <- yrfn_prcs[c(1, xts::endpoints(yrfn_prcs_ts, on = "month")[-1]),]
+    sinc_prcs <- sinc_prcs[c(1, xts::endpoints(sinc_prcs_ts, on = "month")[-1]),]
+  }
+  
+  yr_cret <- yr_prcs %>% 
+    dplyr::mutate(Return = CADBalance/yr_prcs$CADBalance[1] - 1)
+  
+  yr_cret <- rbind(
+    data.frame(MarketDate = as.Date("1980-01-01"), CADBalance = 0, Return = -0.1),
+    yr_cret
+  ) 
+  
+  yr_cret <- yr_cret %>% 
+    dplyr::mutate(Regime = ifelse(Return < 0, "Negative", ifelse(Return > 0, "Positive", "Flat")))
+  yr_cret$Regime <- factor(yr_cret$Regime, levels = c("Negative", "Positive", "Flat"))
+  
+  #yr_cret <- yr_cret[-1,]
+  
+  yrfn_cret <- yrfn_prcs %>% 
+    dplyr::mutate(Return = CADBalance/yrfn_prcs$CADBalance[1] - 1) %>% 
+    dplyr::mutate(Regime = ifelse(Return < 0, "Negative", ifelse(Return > 0, "Positive", "Flat")))
+  yrfn_cret$Regime <- factor(yrfn_cret$Regime, levels = c("Negative", "Positive", "Flat"))
+  
+  sinc_cret <- sinc_prcs %>% 
+    dplyr::mutate(Return = CADBalance/sinc_prcs$CADBalance[1] - 1) %>% 
+    dplyr::mutate(Regime = ifelse(Return < 0, "Negative", ifelse(Return > 0, "Positive", "Flat")))
+  sinc_cret$Regime <- factor(sinc_cret$Regime, levels = c("Negative", "Positive", "Flat"))
   
   results <- list(
     table = rets_tbl,
-    graph = rets_grh
+    graph = list(
+      ytd = yr_cret,
+      yfn = yrfn_cret,
+      sinc = sinc_cret
+    )
   )
   
   return(results)
