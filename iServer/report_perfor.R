@@ -27,7 +27,8 @@ output$perfor_graph_ytd <- renderPlot({
     geom_point() +
     geom_label(label = paste0(round(rets$Return*100,1), "%"), nudge_x = 0.0, nudge_y = 0.02) +
     ggthemes::theme_wsj() +
-    ggtitle("Portfolio Cumulative Return", subtitle = paste0("YTD since ", format(rets$MarketDate[1], "%b %Y"))) +
+    scale_color_manual(name = "Regime", values = user_colors) +
+    ggtitle("Cumulative Return", subtitle = paste0("YTD since ", format(rets$MarketDate[1], "%b %Y"))) +
     scale_x_date(date_labels = "%b", date_breaks = "1 month") + 
     scale_y_continuous(labels = function(x) paste0(x*100, "%")) +
     theme(legend.position = "none")
@@ -39,8 +40,9 @@ output$perfor_graph_yfn <- renderPlot({
     geom_point() +
     geom_label(label = paste0(round(rets$Return*100,1), "%"), nudge_x = 0.0, nudge_y = 0.02) +
     ggthemes::theme_wsj() +
-    ggtitle("Portfolio Cumulative Return", subtitle = paste0("Year from now since ", format(rets$MarketDate[1], "%b %Y"))) +
-    scale_x_date(date_labels = "%b %Y", date_breaks = "1 month") + 
+    scale_color_manual(name = "Regime", values = user_colors) +
+    ggtitle("Cumulative Return", subtitle = paste0("Year from now since ", format(rets$MarketDate[1], "%b %Y"))) +
+    scale_x_date(date_labels = "%b", date_breaks = "1 month") + 
     scale_y_continuous(labels = function(x) paste0(x*100, "%")) +
     theme(legend.position = "none")
 })
@@ -51,7 +53,8 @@ output$perfor_graph_sinc <- renderPlot({
     geom_point() +
     geom_label(label = paste0(round(rets$Return*100,1), "%"), nudge_x = 0.0, nudge_y = 0.02) +
     ggthemes::theme_wsj() +
-    ggtitle("Portfolio Cumulative Return", subtitle = paste0("Since inception ", format(rets$MarketDate[1], "%b %Y"))) +
+    scale_color_manual(name = "Regime", values = user_colors) +
+    ggtitle("Cumulative Return", subtitle = paste0("Since inception ", format(rets$MarketDate[1], "%b %Y"))) +
     scale_x_date(date_labels = "%b %Y", date_breaks = "3 month") + 
     scale_y_continuous(labels = function(x) paste0(x*100, "%")) +
     theme(legend.position = "none")

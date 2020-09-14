@@ -574,17 +574,14 @@ UtilGetPortfPerfor <- function(){
   yr_cret <- yr_prcs %>% 
     dplyr::mutate(Return = CADBalance/yr_prcs$CADBalance[1] - 1) %>% 
     dplyr::mutate(Regime = ifelse(Return < 0, "Negative", ifelse(Return > 0, "Positive", "Flat")))
-  yr_cret$Regime <- factor(yr_cret$Regime, levels = c("Negative", "Positive", "Flat"))
   
   yrfn_cret <- yrfn_prcs %>% 
     dplyr::mutate(Return = CADBalance/yrfn_prcs$CADBalance[1] - 1) %>% 
-    dplyr::mutate(Regime = ifelse(Return < 0, "Negative", ifelse(Return > 0, "Positive", "Flat")))
-  yrfn_cret$Regime <- factor(yrfn_cret$Regime, levels = c("Negative", "Positive", "Flat"))
+   dplyr::mutate(Regime = ifelse(Return < 0, "Negative", ifelse(Return > 0, "Positive", "Flat")))
   
   sinc_cret <- sinc_prcs %>% 
     dplyr::mutate(Return = CADBalance/sinc_prcs$CADBalance[1] - 1) %>% 
     dplyr::mutate(Regime = ifelse(Return < 0, "Negative", ifelse(Return > 0, "Positive", "Flat")))
-  sinc_cret$Regime <- factor(sinc_cret$Regime, levels = c("Negative", "Positive", "Flat"))
   
   results <- list(
     table = rets_tbl,

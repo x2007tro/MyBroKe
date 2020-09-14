@@ -49,6 +49,12 @@ db_obj <- list(
   pwd = "yuheng"
 )
 
+#
+# color scheme
+#
+user_colors <- c("#FE7171", "#28DF99", "#FFC93C")
+names(user_colors) <- c("Negative", "Positive", "Flat")
+
 ##
 # Obtain tradable currencies from DB
 tradable_curr <- unique(ReadDataFromSS(db_obj, "MyBroKe_CashBalanceMap")$Currency)
