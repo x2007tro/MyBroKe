@@ -42,7 +42,7 @@ ei_refresh_time <- 24 * 60 * 60 * 1000
 # connection for database
 #
 db_obj <- list(
-  srv = "192.168.2.200",
+  srv = "10.0.0.200",
   prt = 3307,
   dbn = "WebappAdmin",
   id = "dspeast2",
