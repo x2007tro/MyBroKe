@@ -6,6 +6,8 @@ autoUpdate <- reactiveTimer(refresh_time)
 port_info <- reactive({
   autoUpdate()
   port_info <- UtilGetPortfolio()
+  UtilPostCurrHoldings(port_info, db_obj)
+  return(port_info)
 })
 
 output$last_update_time_nonforex <- renderText({
@@ -29,6 +31,8 @@ output$portfolio_holding_nonforex <- DT::renderDataTable({
   withProgress(message = 'Getting porfolio holdings ...', {
     tbl2dis <- port_info()$holdings_nonforex
   })
+  
+  # add data to 
   
   DT::datatable(
     tbl2dis, 

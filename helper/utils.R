@@ -596,6 +596,41 @@ UtilGetPortfPerfor <- function(){
 }
 
 #
+# Add current holdings to DB
+#
+UtilPostCurrHoldings <- function(porfobj, dbobj){
+  tmp <- porfobj
+  
+  # get info
+  hd <- tmp$holdings_nonforex
+  cb <- tmp$cash_balance
+  
+  # get exchange rate
+  er <- cb %>% 
+    dplyr::select(Currency, `Exchange Rate`)
+  
+  # get portf holding first
+  portf <- hd %>% 
+    dplyr::select(`Market Date`, `Symbol`, `Security Type`, Currency, `Market Value`) %>% 
+    dplyr::left_join(er, by = "Currency") %>% 
+    dplyr::mutate(
+      `CAD Market Value` = `Market Value` * `Exchange Rate`,
+      `Trade Mode` = acct,
+      `Application Status` = ts_static$ts_app_status
+    )
+  
+  # remove duplicate data
+  sql_str <- paste0("DELETE FROM MyBroKe_PortfolioHoldings WHERE `Market Date` = '", unique(portf$`Market Date`), "'")
+  print(sql_str)
+  GetQueryResFromSS(dbobj, sql_str)
+  
+  # add data
+  WriteDataToSS(dbobj, portf, "MyBroKe_PortfolioHoldings", apd = TRUE)
+  
+  return(portf)
+}
+
+#
 # Manual open & close connection
 #
 OpenCloseConn <- function(dirc = c("open", "close")){
