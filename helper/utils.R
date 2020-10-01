@@ -616,11 +616,12 @@ UtilPostCurrHoldings <- function(porfobj, dbobj){
     dplyr::mutate(
       `CAD Market Value` = `Market Value` * `Exchange Rate`,
       `Trade Mode` = acct,
-      `Application Status` = ts_static$ts_app_status
+      `Application Status` = ts_static$ts_app_status,
+      Active = 1
     )
   
   # remove duplicate data
-  sql_str <- paste0("DELETE FROM MyBroKe_PortfolioHoldings WHERE `Market Date` = '", unique(portf$`Market Date`), "'")
+  sql_str <- paste0("UPDATE MyBroKe_PortfolioHoldings SET Active = 0 WHERE `Trade Mode` = '", acct, "' and `Application Status` = '", ts_static$ts_app_status, "'")
   print(sql_str)
   GetQueryResFromSS(dbobj, sql_str)
   
