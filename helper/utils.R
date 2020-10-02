@@ -646,8 +646,7 @@ UtilGetPortfSectorDistrib <- function(){
   # get portfolio current assets
   tmp <- ReadDataFromSS(db_obj, "MyBroKe_PortfolioHoldings")
   sec_wgt <- tmp %>% 
-    #dplyr::filter(`Active` == 1 & `Security.Type` != "OPT" & `Trade.Mode` == acct & `Application.Status` == ts_static$ts_app_status) %>% 
-    dplyr::filter(`Active` == 1 & `Security.Type` != "OPT" & `Trade.Mode` == 'Paper' & `Application.Status` == 'Test') %>% 
+    dplyr::filter(`Active` == 1 & `Security.Type` != "OPT" & `Trade.Mode` == acct & `Application.Status` == ts_static$ts_app_status) %>% 
     dplyr::select(Symbol, Currency, `CAD.Market.Value`) %>% 
     dplyr::left_join(asec, by = c("Symbol", "Currency")) %>% 
     dplyr::mutate(
@@ -656,12 +655,44 @@ UtilGetPortfSectorDistrib <- function(){
     ) %>% 
     dplyr::mutate(`CAD Market Value2` = `CAD.Market.Value` * Weight2 / 100) %>% 
     dplyr::group_by(Sector2) %>% 
-    dplyr::summarise(`Sector Value` = sum(`CAD Market Value2`)) %>% 
-    dplyr::mutate(`Sector Weight` = `Sector Value`/sum(`Sector Value`))
+    dplyr::summarise(`Value` = sum(`CAD Market Value2`)) %>% 
+    dplyr::mutate(`Weight` = `Value`/sum(`Value`))
   
   #WriteDataToSS(db_obj, sec_wgt, "temp", apd = TRUE)
   
   return(sec_wgt)
+  
+}
+
+#
+# Retrieve current asset sector
+# 2020/10/01
+#
+UtilGetPortfCountryDistrib <- function(){
+  # get asset sector
+  tmp <- ReadDataFromSS(db_obj, "MyBroKe_AssetCountry")
+  asec <- tmp %>% 
+    dplyr::filter(`Active` == 1) %>% 
+    dplyr::select(Symbol, Currency, Country, Weight)
+  
+  # get portfolio current assets
+  tmp <- ReadDataFromSS(db_obj, "MyBroKe_PortfolioHoldings")
+  ctry_wgt <- tmp %>% 
+    dplyr::filter(`Active` == 1 & `Security.Type` != "OPT" & `Trade.Mode` == acct & `Application.Status` == ts_static$ts_app_status) %>% 
+    dplyr::select(Symbol, Currency, `CAD.Market.Value`) %>% 
+    dplyr::left_join(asec, by = c("Symbol", "Currency")) %>% 
+    dplyr::mutate(
+      Country2 = ifelse(is.na(Country), "Other", Country),
+      Weight2 = ifelse(is.na(Weight), 100, Weight)
+    ) %>% 
+    dplyr::mutate(`CAD Market Value2` = `CAD.Market.Value` * Weight2 / 100) %>% 
+    dplyr::group_by(Country2) %>% 
+    dplyr::summarise(`Value` = sum(`CAD Market Value2`)) %>% 
+    dplyr::mutate(`Weight` = `Value`/sum(`Value`))
+  
+  #WriteDataToSS(db_obj, sec_wgt, "temp", apd = TRUE)
+  
+  return(ctry_wgt)
   
 }
 

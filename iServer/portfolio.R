@@ -86,7 +86,24 @@ output$portfolio_sector <- DT::renderDataTable({
       searching = TRUE,
       paging = TRUE
     ) 
-  )
+  ) %>% 
+    DT::formatCurrency(c("Value"), currency = "$", digits = 2) %>% 
+    DT::formatPercentage("Weight", 2)
+})
+
+output$portfolio_country <- DT::renderDataTable({
+  tbl2dis <- UtilGetPortfCountryDistrib()
+  DT::datatable(
+    tbl2dis, 
+    options = list(
+      pageLength = 20,
+      orderClasses = TRUE,
+      searching = TRUE,
+      paging = TRUE
+    ) 
+  ) %>% 
+    DT::formatCurrency(c("Value"), currency = "$", digits = 2) %>% 
+    DT::formatPercentage("Weight", 2)
 })
 
 output$portfolio_holding_forex <- DT::renderDataTable({
