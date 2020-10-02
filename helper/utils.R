@@ -644,21 +644,22 @@ UtilGetPortfSectorDistrib <- function(){
     dplyr::select(Symbol, Currency, Sector, Weight)
   
   # get portfolio current assets
-  tmp_ <- ReadDataFromSS(db_obj, "MyBroKe_PortfolioHoldings")
+  tmp <- ReadDataFromSS(db_obj, "MyBroKe_PortfolioHoldings")
   sec_wgt <- tmp %>% 
-    dplyr::filter(`Active` == 1 & `Security.Type` != "OPT" & `Trade Mode` == acct & `Application Status` == ts_static$ts_app_status) %>% 
-    dplyr::select(Symbol, Currency, `CAD Market Value`) %>% 
+    #dplyr::filter(`Active` == 1 & `Security.Type` != "OPT" & `Trade.Mode` == acct & `Application.Status` == ts_static$ts_app_status) %>% 
+    dplyr::filter(`Active` == 1 & `Security.Type` != "OPT" & `Trade.Mode` == 'Paper' & `Application.Status` == 'Test') %>% 
+    dplyr::select(Symbol, Currency, `CAD.Market.Value`) %>% 
     dplyr::left_join(asec, by = c("Symbol", "Currency")) %>% 
     dplyr::mutate(
       Sector2 = ifelse(is.na(Sector), "Other", Sector),
-      Sector2 = ifelse(is.na(Weight), 100, Weight),
+      Weight2 = ifelse(is.na(Weight), 100, Weight)
     ) %>% 
-    dplyr::mutate(`CAD Market Value2` = `CAD Market Value` * Weight / 100) %>% 
-    dplyr::group_by(Sector) %>% 
+    dplyr::mutate(`CAD Market Value2` = `CAD.Market.Value` * Weight2 / 100) %>% 
+    dplyr::group_by(Sector2) %>% 
     dplyr::summarise(`Sector Value` = sum(`CAD Market Value2`)) %>% 
     dplyr::mutate(`Sector Weight` = `Sector Value`/sum(`Sector Value`))
   
-  WriteDataToSS(db_obj, sec_wgt, "temp", apd = TRUE)
+  #WriteDataToSS(db_obj, sec_wgt, "temp", apd = TRUE)
   
   return(sec_wgt)
   
