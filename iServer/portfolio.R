@@ -15,6 +15,16 @@ output$last_update_time_nonforex <- renderText({
   paste0("Last updated: ", format(update_datetime, "%Y-%m-%d %H:%M:%S"))
 })
 
+output$last_update_time_sector <- renderText({
+  update_datetime <- port_info()$update_datetime
+  paste0("Last updated: ", format(update_datetime, "%Y-%m-%d %H:%M:%S"))
+})
+
+output$last_update_time_country <- renderText({
+  update_datetime <- port_info()$update_datetime
+  paste0("Last updated: ", format(update_datetime, "%Y-%m-%d %H:%M:%S"))
+})
+
 output$last_update_time_forex <- renderText({
   update_datetime <- port_info()$update_datetime
   paste0("Last updated: ", format(update_datetime, "%Y-%m-%d %H:%M:%S"))
@@ -64,6 +74,19 @@ output$portfolio_holding_nonforex <- DT::renderDataTable({
         c("#fa8072","#9acd32")    # salmon and yellowgreen
       )
     )
+})
+
+output$portfolio_sector <- DT::renderDataTable({
+  tbl2dis <- UtilGetPortfSectorDistrib()
+  DT::datatable(
+    tbl2dis, 
+    options = list(
+      pageLength = 20,
+      orderClasses = TRUE,
+      searching = TRUE,
+      paging = TRUE
+    ) 
+  )
 })
 
 output$portfolio_holding_forex <- DT::renderDataTable({

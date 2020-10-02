@@ -597,6 +597,7 @@ UtilGetPortfPerfor <- function(){
 
 #
 # Add current holdings to DB
+# 2020/09/30
 #
 UtilPostCurrHoldings <- function(porfobj, dbobj){
   tmp <- porfobj
@@ -629,6 +630,38 @@ UtilPostCurrHoldings <- function(porfobj, dbobj){
   WriteDataToSS(dbobj, portf, "MyBroKe_PortfolioHoldings", apd = TRUE)
   
   return(portf)
+}
+
+#
+# Retrieve current asset sector
+# 2020/10/01
+#
+UtilGetPortfSectorDistrib <- function(){
+  # get asset sector
+  tmp <- ReadDataFromSS(db_obj, "MyBroKe_AssetSector")
+  asec <- tmp %>% 
+    dplyr::filter(`Active` == 1) %>% 
+    dplyr::select(Symbol, Currency, Sector, Weight)
+  
+  # get portfolio current assets
+  tmp_ <- ReadDataFromSS(db_obj, "MyBroKe_PortfolioHoldings")
+  sec_wgt <- tmp %>% 
+    dplyr::filter(`Active` == 1 & `Security.Type` != "OPT" & `Trade Mode` == acct & `Application Status` == ts_static$ts_app_status) %>% 
+    dplyr::select(Symbol, Currency, `CAD Market Value`) %>% 
+    dplyr::left_join(asec, by = c("Symbol", "Currency")) %>% 
+    dplyr::mutate(
+      Sector2 = ifelse(is.na(Sector), "Other", Sector),
+      Sector2 = ifelse(is.na(Weight), 100, Weight),
+    ) %>% 
+    dplyr::mutate(`CAD Market Value2` = `CAD Market Value` * Weight / 100) %>% 
+    dplyr::group_by(Sector) %>% 
+    dplyr::summarise(`Sector Value` = sum(`CAD Market Value2`)) %>% 
+    dplyr::mutate(`Sector Weight` = `Sector Value`/sum(`Sector Value`))
+  
+  WriteDataToSS(db_obj, sec_wgt, "temp", apd = TRUE)
+  
+  return(sec_wgt)
+  
 }
 
 #

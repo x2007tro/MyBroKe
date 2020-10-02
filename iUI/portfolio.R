@@ -32,6 +32,24 @@ portfolio_tp <- tabPanel(
     ),  # end of nonforex security
     
     tabPanel(
+      "Sector Weight",
+      
+      fluidRow(
+        column(
+          12,
+          shypka.ddiv(tags$h5(
+            style = "padding:4px",
+            textOutput("last_update_time_sector")
+          ), color = "#ffe4e1"),    #misty rose
+          
+          shypka.ddiv(
+            DT::dataTableOutput("portfolio_sector")
+          )
+        )
+      )
+    ), # end of sector
+    
+    tabPanel(
       "Forex",
       
       fluidRow(
