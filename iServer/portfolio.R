@@ -1,7 +1,7 @@
 #
 # Update section portfolio
 #
-autoUpdate <- reactiveTimer(unit_refresh_time)
+autoUpdate <- reactiveTimer(refresh_time)
 
 port_info <- reactive({
   autoUpdate()
