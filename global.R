@@ -35,8 +35,9 @@ fut_message_count_trader <- 1
 # other
 econ_indi_panel_default_width <- 12
 econ_indi_tab_names <- c("gei_dt", "lei_dt", "coi_dt", "lai_dt")
-refresh_time <- 60000
-ei_refresh_time <- 24 * 60 * 60 * 1000
+unit_refresh_time <- 60 * 1000                # 1 minute
+ei_refresh_time <- 24 * 60 * unit_refresh_time   # 1 day
+perfor_refresh_time <- 30 * unit_refresh_time    # 30 minutes
 
 #
 # connection for database

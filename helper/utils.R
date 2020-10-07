@@ -584,6 +584,7 @@ UtilGetPortfPerfor <- function(){
     dplyr::mutate(Regime = ifelse(Return < 0, "Negative", ifelse(Return > 0, "Positive", "Flat")))
   
   results <- list(
+    update_datetime = Sys.time(),
     table = rets_tbl,
     graph = list(
       ytd = yr_cret,

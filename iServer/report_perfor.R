@@ -1,10 +1,18 @@
 ##
 # Performance
 ##
+autoUpdate <- reactiveTimer(perfor_refresh_time)
+
 perfor_data <- reactive({
+  autoUpdate()
   withProgress(message = 'Getting portfolio performance data ...', {
     dataset <- UtilGetPortfPerfor()
   })
+})
+
+output$last_update_time_perfor_table <- renderText({
+  update_datetime <- perfor_data()$update_datetime
+  paste0("Last updated: ", format(update_datetime, "%Y-%m-%d %H:%M:%S"))
 })
 
 output$perfor_table <- DT::renderDataTable({
