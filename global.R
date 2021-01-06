@@ -44,7 +44,7 @@ perfor_refresh_time <- 30 * unit_refresh_time    # 30 minutes
 # connection for database
 #
 db_obj <- list(
-  srv = "10.0.0.200",
+  srv = "192.168.2.200",
   prt = 3307,
   dbn = "WebappAdmin",
   id = "dspeast2",
