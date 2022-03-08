@@ -514,8 +514,8 @@ UtilGetPortfPerfor <- function(){
   #
   trans <- ReadDataFromSS(db_obj, "MyBroKe_FundTransferHistory") %>% 
     dplyr::filter(Active == 1) %>% 
-    dplyr::select(datadate, Amount) %>% 
-    dplyr::rename(MarketDate = datadate)
+    dplyr::mutate(MarketDate = as.Date(datadate)) %>% 
+    dplyr::select(MarketDate, Amount) 
   full_trans <- data.frame(
     MarketDate = seq(min(prcs_df$MarketDate), max(prcs_df$MarketDate), by = 'day')
   ) %>% 
