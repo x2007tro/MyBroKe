@@ -691,7 +691,8 @@ UtilGetPortfSectorDistrib <- function(){
     dplyr::mutate(`CAD Market Value2` = `CAD.Market.Value` * Weight2 / 100) %>% 
     dplyr::group_by(Sector2) %>% 
     dplyr::summarise(`Value` = sum(`CAD Market Value2`)) %>% 
-    dplyr::mutate(`Weight` = `Value`/sum(`Value`))
+    dplyr::mutate(`Weight` = `Value`/sum(`Value`)) %>% 
+    dplyr::arrange(desc(Weight))
   
   #WriteDataToSS(db_obj, sec_wgt, "temp", apd = TRUE)
   
@@ -724,7 +725,8 @@ UtilGetPortfCountryDistrib <- function(){
     dplyr::mutate(`CAD Market Value2` = `CAD.Market.Value` * Weight2 / 100) %>% 
     dplyr::group_by(Country2) %>% 
     dplyr::summarise(`Value` = sum(`CAD Market Value2`)) %>% 
-    dplyr::mutate(`Weight` = `Value`/sum(`Value`))
+    dplyr::mutate(`Weight` = `Value`/sum(`Value`)) %>% 
+    dplyr::arrange(desc(Weight))
   
   #WriteDataToSS(db_obj, sec_wgt, "temp", apd = TRUE)
   
