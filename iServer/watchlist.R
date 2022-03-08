@@ -31,5 +31,6 @@ observeEvent(input$ticker_search_submit, {
 })
 
 output$wl_stwl_tbl <- DT::renderDataTable({
-  ReadDataFromSS(db_obj, 'MyBroKe_STWatchlist')
+  ReadDataFromSS(db_obj, 'MyBroKe_STWatchlist') %>% 
+    dplyr::select(Symbol, Description, Action, Horizon, Reason)
 })
