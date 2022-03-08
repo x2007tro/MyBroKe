@@ -510,6 +510,39 @@ UtilGetPortfPerfor <- function(){
     dplyr::select(MarketDate, CADBalance)
   
   ##
+  # contribution and distribution adjustment
+  #
+  trans <- ReadDataFromSS(db_obj, "MyBroKe_FundTransferHistory") %>% 
+    dplyr::filter(Active == 1) %>% 
+    dplyr::select(datadate, Amount) %>% 
+    dplyr::rename(MarketDate = datadate)
+  full_trans <- data.frame(
+    MarketDate = seq(min(prcs_df$MarketDate), max(prcs_df$MarketDate), by = 'day')
+  ) %>% 
+    dplyr::left_join(prcs_df, by = c('MarketDate')) %>% 
+    tidyr::fill(CADBalance)
+  
+  for(i in 1:nrow(trans)){
+    curr_trans <- trans[i,]
+    full_trans <- full_trans %>% 
+      dplyr::left_join(curr_trans, by = c('MarketDate')) %>% 
+      dplyr::mutate(ratio = (CADBalance - Amount)/CADBalance) %>% 
+      dplyr::select(-Amount)
+    colnames(full_trans) <- c('MarketDate','CADBalance',paste0('Ratio',1:i))
+  }
+  
+  full_trans <- full_trans %>% 
+    tidyr::fill(colnames(full_trans))
+  full_trans[is.na(full_trans)] <- 1
+  
+  full_trans <- full_trans %>% 
+    dplyr::mutate(OriCADBalance = CADBalance)
+  for(i in 1:nrow(trans)){
+    full_trans <- full_trans %>% 
+      dplyr::mutate(CADBalance = CADBalance*.data[[paste0("Ratio",i)]])
+  }
+  
+  ##
   # table output
   
   # date manipulation
@@ -642,7 +675,8 @@ UtilGetPortfSectorDistrib <- function(){
   tmp <- ReadDataFromSS(db_obj, "MyBroKe_AssetSector")
   asec <- tmp %>% 
     dplyr::filter(`Active` == 1) %>% 
-    dplyr::select(Symbol, Currency, Sector, Weight)
+    dplyr::select(Symbol, Currency, Sector, Weight) %>% 
+    dplyr::arrange(desc(Weight))
   
   # get portfolio current assets
   tmp <- ReadDataFromSS(db_obj, "MyBroKe_PortfolioHoldings")
@@ -674,7 +708,8 @@ UtilGetPortfCountryDistrib <- function(){
   tmp <- ReadDataFromSS(db_obj, "MyBroKe_AssetCountry")
   asec <- tmp %>% 
     dplyr::filter(`Active` == 1) %>% 
-    dplyr::select(Symbol, Currency, Country, Weight)
+    dplyr::select(Symbol, Currency, Country, Weight) %>% 
+    dplyr::arrange(desc(Weight))
   
   # get portfolio current assets
   tmp <- ReadDataFromSS(db_obj, "MyBroKe_PortfolioHoldings")
