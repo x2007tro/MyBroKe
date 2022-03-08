@@ -520,7 +520,7 @@ UtilGetPortfPerfor <- function(){
     MarketDate = seq(min(prcs_df$MarketDate), max(prcs_df$MarketDate), by = 'day')
   ) %>% 
     dplyr::left_join(prcs_df, by = c('MarketDate')) %>% 
-    tidyr::fill(CADBalance)
+    tidyr::fill(CADBalance, .direction = "up")
   
   for(i in 1:nrow(trans)){
     curr_trans <- trans[i,]
@@ -532,7 +532,7 @@ UtilGetPortfPerfor <- function(){
   }
   
   full_trans <- full_trans %>% 
-    tidyr::fill(colnames(full_trans))
+    tidyr::fill(colnames(full_trans), .direction = "down")
   full_trans[is.na(full_trans)] <- 1
   
   full_trans <- full_trans %>% 
