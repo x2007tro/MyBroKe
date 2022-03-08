@@ -8,3 +8,6 @@ WriteDataToSS(db_obj, tmp, "MyBroKe_AssetCountry")
 
 tmp <- readxl::read_excel('./updater/source.xlsx', sheet = 'FundTransferHistory')
 WriteDataToSS(db_obj, tmp, "MyBroKe_FundTransferHistory")
+
+tmp <- readxl::read_excel('./updater/source.xlsx', sheet = 'STWatchlist')
+WriteDataToSS(db_obj, tmp, "MyBroKe_STWatchlist")

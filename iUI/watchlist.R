@@ -9,7 +9,7 @@ watchlist_tp <- tabPanel(
       
       fluidRow(
         column(
-          12,
+          6,
           #tags$h4(tags$b("Watchlist"), style="float:left"),
           tags$h4("Search Bar"),
           tags$div(style="float:left; padding:0px; margin:0px; height:100%",
@@ -28,7 +28,13 @@ watchlist_tp <- tabPanel(
             )
           )
           
-        ))
+        ),
+        column(
+          6,
+          tags$h4("Watchlist"),
+          DT::dataTableOutput("wl_stwl_tbl")
+        )
+      )
     ), # end of tabpanel
     
     tabPanel(

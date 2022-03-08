@@ -29,3 +29,7 @@ observeEvent(input$ticker_search_submit, {
     UtilPlotMarketReturn(hist_ret, input$ticker_search, "1Y")
   })
 })
+
+output$wl_stwl_tbl <- DT::renderDataTable({
+  ReadDataFromSS(db_obj, 'MyBroKe_STWatchlist')
+})

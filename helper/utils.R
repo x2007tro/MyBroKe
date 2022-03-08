@@ -345,9 +345,9 @@ UtilPlotMarketReturn <- function(master_plot_data, market, period){
   if(market == "Equity"){
     plot_data_prelim <- master_plot_data[,1:3]
   } else if (market == "Tbond"){
-    plot_data_prelim <- master_plot_data[,4:7]
+    plot_data_prelim <- master_plot_data[,4:6]
   } else if (market == "Cbond"){
-    plot_data_prelim <- master_plot_data[,8:10]
+    plot_data_prelim <- master_plot_data[,7:9]
   } else {
     # do nothing
     plot_data_prelim <- master_plot_data

@@ -119,7 +119,7 @@
 #
 # # Test get Econ indicators
 #x <- UtilGetEconIndicators(ei_fred, ei_quandl)
-#x <- UtilGetMarketReturn(watchlist)
+# x <- UtilGetMarketReturn(watchlist)
 #x <- UtilGetStockLastestPrice("AAPL-USD")
 #x <- UtilGetStockHistPrcAndRet("AAPL-USD")
 #UtilPlotMarketReturn(x$cumret, "AAPL-USD", "1Y")
