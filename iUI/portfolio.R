@@ -110,7 +110,7 @@ portfolio_tp <- tabPanel(
           fluidRow(
             column(
               12,
-              tags$h5(class = 'wgt_title', "Weight by Sector (Equities Only)"),
+              tags$h5(class = 'wgt_title', "Weight by Country (Equities Only)"),
               shypka.ddiv(
                 DT::dataTableOutput("portfolio_country")
               )
