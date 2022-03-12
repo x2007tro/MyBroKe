@@ -77,7 +77,7 @@ output$portfolio_holding_nonforex <- DT::renderDataTable({
 })
 
 output$portfolio_instrument <- DT::renderDataTable({
-  tbl2dis <- UtilGertPortfExpo(dbobj)
+  tbl2dis <- UtilGertPortfExpo(db_obj)
   DT::datatable(
     tbl2dis$by_inst, 
     options = list(
