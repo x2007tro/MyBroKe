@@ -40,7 +40,7 @@ portfolio_tp <- tabPanel(
           shypka.ddiv(tags$h5(
             style = "padding:4px",
             textOutput("last_update_time_sector")
-          ), color = "#ffe4e1"),    #misty rose
+          ), color = "#ffe4e1")    #misty rose
         )
       ),
       
