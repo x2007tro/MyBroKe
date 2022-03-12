@@ -36,7 +36,7 @@ portfolio_tp <- tabPanel(
       
       fluidRow(
         column(
-          8,
+          12,
           shypka.ddiv(tags$h5(
             style = "padding:4px",
             textOutput("last_update_time_sector")
@@ -52,6 +52,7 @@ portfolio_tp <- tabPanel(
             column(
               12,
               shypka.ddiv(
+                tags$h4("Weight by Instrument"),
                 DT::dataTableOutput("portfolio_instrument")
               )
             )
@@ -61,6 +62,7 @@ portfolio_tp <- tabPanel(
             column(
               12,
               shypka.ddiv(
+                tags$h4("Weight by Asset Category"),
                 DT::dataTableOutput("portfolio_assetcat")
               )
             )
@@ -70,6 +72,7 @@ portfolio_tp <- tabPanel(
             column(
               12,
               shypka.ddiv(
+                tags$h4("Weight by Asset Class"),
                 DT::dataTableOutput("portfolio_assetcla")
               )
             )
@@ -84,6 +87,7 @@ portfolio_tp <- tabPanel(
             column(
               12,
               shypka.ddiv(
+                tags$h4("Weight by Sector (Equities)"),
                 DT::dataTableOutput("portfolio_sector")
               )
             )
@@ -93,6 +97,7 @@ portfolio_tp <- tabPanel(
             column(
               12,
               shypka.ddiv(
+                tags$h4("Weight by Investment Style"),
                 DT::dataTableOutput("portfolio_style")
               )
             )
@@ -106,6 +111,7 @@ portfolio_tp <- tabPanel(
             column(
               12,
               shypka.ddiv(
+                tags$h4("Weight by Sector (Equities)"),
                 DT::dataTableOutput("portfolio_country")
               )
             )

@@ -81,7 +81,7 @@ output$portfolio_instrument <- DT::renderDataTable({
   DT::datatable(
     tbl2dis$by_inst, 
     options = list(
-      pageLength = 20,
+      pageLength = 10,
       orderClasses = TRUE,
       searching = TRUE,
       paging = TRUE
@@ -96,7 +96,7 @@ output$portfolio_assetcat <- DT::renderDataTable({
   DT::datatable(
     tbl2dis$by_acat, 
     options = list(
-      pageLength = 20,
+      pageLength = 10,
       orderClasses = TRUE,
       searching = TRUE,
       paging = TRUE
@@ -111,7 +111,7 @@ output$portfolio_assetcla <- DT::renderDataTable({
   DT::datatable(
     tbl2dis$by_acla, 
     options = list(
-      pageLength = 20,
+      pageLength = 10,
       orderClasses = TRUE,
       searching = TRUE,
       paging = TRUE
@@ -126,7 +126,7 @@ output$portfolio_sector <- DT::renderDataTable({
   DT::datatable(
     tbl2dis$by_sect, 
     options = list(
-      pageLength = 20,
+      pageLength = 10,
       orderClasses = TRUE,
       searching = TRUE,
       paging = TRUE
@@ -141,7 +141,7 @@ output$portfolio_style <- DT::renderDataTable({
   DT::datatable(
     tbl2dis$by_styl, 
     options = list(
-      pageLength = 20,
+      pageLength = 10,
       orderClasses = TRUE,
       searching = TRUE,
       paging = TRUE
