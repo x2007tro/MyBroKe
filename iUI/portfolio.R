@@ -32,7 +32,7 @@ portfolio_tp <- tabPanel(
     ),  # end of nonforex security
     
     tabPanel(
-      "Sector and Country",
+      "Exposure",
       
       fluidRow(
         column(
