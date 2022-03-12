@@ -36,28 +36,84 @@ portfolio_tp <- tabPanel(
       
       fluidRow(
         column(
-          6,
+          8,
           shypka.ddiv(tags$h5(
             style = "padding:4px",
             textOutput("last_update_time_sector")
           ), color = "#ffe4e1"),    #misty rose
-          
-          shypka.ddiv(
-            DT::dataTableOutput("portfolio_sector")
-          )
-        ),
+        )
+      ),
+      
+      fluidRow(
         column(
-          6,
-          shypka.ddiv(tags$h5(
-            style = "padding:4px",
-            textOutput("last_update_time_country")
-          ), color = "#ffe4e1"),    #misty rose
+          4,
           
-          shypka.ddiv(
-            DT::dataTableOutput("portfolio_country")
+          fluidRow(
+            column(
+              12,
+              shypka.ddiv(
+                DT::dataTableOutput("portfolio_instrument")
+              )
+            )
+          ),
+          
+          fluidRow(
+            column(
+              12,
+              shypka.ddiv(
+                DT::dataTableOutput("portfolio_assetcat")
+              )
+            )
+          ),
+          
+          fluidRow(
+            column(
+              12,
+              shypka.ddiv(
+                DT::dataTableOutput("portfolio_assetcla")
+              )
+            )
           )
+          
+        ),
+        
+        column(
+          4,
+          
+          fluidRow(
+            column(
+              12,
+              shypka.ddiv(
+                DT::dataTableOutput("portfolio_sector")
+              )
+            )
+          ),
+          
+          fluidRow(
+            column(
+              12,
+              shypka.ddiv(
+                DT::dataTableOutput("portfolio_style")
+              )
+            )
+          )
+          
+        ),
+        
+        column(
+          4,
+          fluidRow(
+            column(
+              12,
+              shypka.ddiv(
+                DT::dataTableOutput("portfolio_country")
+              )
+            )
+          )
+          
         )
       )
+    
     ), # end of sector
     
     tabPanel(

@@ -41,7 +41,7 @@ mainServer <- function(input, output, session) {
   ##
   # market news (not developed yet)
   ##
-  # source("./iServer/market_news.R", local = TRUE)
+  source("./iServer/market_news.R", local = TRUE)
   
   ##
   # economic indicators

@@ -128,7 +128,7 @@ UtilTradeWithIB <- function(blotter){
         TSSetTransmit(transmit)$
         TSSetPrelimTradeList(blotter[i,])$
         TSGenFnlTradeList()
-        
+      
       ts_static$TSExecuteAllTrades()
       
       curr_trd_id <- ts_static$ts_trade_ids[length(ts_static$ts_trade_ids)]
@@ -191,10 +191,10 @@ UtilTradeWithIB <- function(blotter){
                         TradeMode = acct,
                         ApplicationStatus = ts_static$ts_app_status,
                         Msg = paste0(sec_type, " ", order_type, " trade (",curr_trd_id, ") ", ticker, " - ", curr," is not successfully traded (", side, ") at ",
-                                    trade_date, " ", trade_time),
+                                     trade_date, " ", trade_time),
                         stringsAsFactors = FALSE)
     }
-
+    
   }
   return(list(trade_rec = trade_res, msg_rec = msg))
 }
@@ -502,7 +502,7 @@ UtilGetEconIndicators <- function(ei_fred, ei_quandl){
 #
 ##
 UtilGetPortfPerfor <- function(){
-
+  
   qry_str <- "SELECT NewMarketDate, `CAD Balance` FROM WebappAdmin.100_020_AccountReconciliationHistory where `security type` = 'NetLiquidation' and currency = 'CAD'"
   dataset <- GetQueryResFromSS(db_obj, qry_str)
   prcs_df <- dataset %>% 
@@ -610,7 +610,7 @@ UtilGetPortfPerfor <- function(){
   
   yrfn_cret <- yrfn_prcs %>% 
     dplyr::mutate(Return = CADBalance/yrfn_prcs$CADBalance[1] - 1) %>% 
-   dplyr::mutate(Regime = ifelse(Return < 0, "Negative", ifelse(Return > 0, "Positive", "Flat")))
+    dplyr::mutate(Regime = ifelse(Return < 0, "Negative", ifelse(Return > 0, "Positive", "Flat")))
   
   sinc_cret <- sinc_prcs %>% 
     dplyr::mutate(Return = CADBalance/sinc_prcs$CADBalance[1] - 1) %>% 
@@ -667,10 +667,99 @@ UtilPostCurrHoldings <- function(porfobj, dbobj){
 }
 
 #
+#
+#
+#
+UtilGertPortfExpo <- function(dbobj){
+  
+  ##
+  # Get portfolio holding
+  portfh <- ReadDataFromSS(db_obj, "MyBroKe_PortfolioHoldings")
+  
+  ##
+  # Asset sector
+  tmp <- ReadDataFromSS(db_obj, "MyBroKe_AssetSector")
+  sector <- tmp %>% 
+    dplyr::filter(`Active` == 1) %>% 
+    dplyr::select(Symbol, Currency, Sector, Weight) 
+  
+  ##
+  # Asset country
+  tmp <- ReadDataFromSS(db_obj, "MyBroKe_AssetCountry")
+  country <- tmp %>% 
+    dplyr::filter(`Active` == 1) %>% 
+    dplyr::select(Symbol, Currency, Country, Weight) 
+  
+  ##
+  # other character
+  tmp <- ReadDataFromSS(db_obj, "MyBroKe_AssetChar")
+  char <- tmp %>% 
+    dplyr::filter(`Active` == 1) %>% 
+    dplyr::select(Symbol, Currency, Instrument, AssetCategory, AssetClass, Style)
+  
+  ##
+  # further processing
+  portfh2 <- portfh %>% 
+    dplyr::filter(`Active` == 1 & `Trade.Mode` == acct & `Application.Status` == ts_static$ts_app_status) %>% 
+    dplyr::select(Symbol, Currency, `Security.Type`, `CAD.Market.Value`) %>% 
+    dplyr::left_join(char, by = c("Symbol", "Currency")) %>% 
+    dplyr::mutate(Instrument = paste0(`Security.Type`, "-", Instrument))
+  portfv <- sum(portfh2$`CAD.Market.Value`)
+  
+  ##
+  # process character
+  by_inst <- portfh2 %>% dplyr::group_by(Instrument) %>% dplyr::summarise(Value = sum(`CAD.Market.Value`)) %>% dplyr::mutate(Weight = Value/portfv) %>% dplyr::arrange(desc(Weight))
+  by_acat <- portfh2 %>% dplyr::group_by(AssetCategory) %>% dplyr::summarise(Value = sum(`CAD.Market.Value`)) %>% dplyr::mutate(Weight = Value/portfv) %>% dplyr::arrange(desc(Weight))
+  by_acla <- portfh2 %>% dplyr::group_by(AssetClass) %>% dplyr::summarise(Value = sum(`CAD.Market.Value`)) %>% dplyr::mutate(Weight = Value/portfv) %>% dplyr::arrange(desc(Weight))
+  by_styl <- portfh2 %>% dplyr::group_by(Style) %>% dplyr::summarise(Value = sum(`CAD.Market.Value`)) %>% dplyr::mutate(Weight = Value/portfv) %>% dplyr::arrange(desc(Weight))
+  
+  ##
+  # process sector
+  by_sect <- portfh2 %>% 
+    dplyr::filter(AssetCategory == 'Equity') %>% 
+    dplyr::left_join(sector, by = c("Symbol", "Currency")) %>% 
+    dplyr::mutate(
+      Sector2 = ifelse(is.na(Sector), "Other", Sector),
+      Weight2 = ifelse(is.na(Weight), 100, Weight)
+    ) %>% 
+    dplyr::mutate(`CAD Market Value2` = `CAD.Market.Value` * Weight2 / 100) %>% 
+    dplyr::group_by(Sector2) %>% 
+    dplyr::summarise(`Value` = sum(`CAD Market Value2`)) %>% 
+    dplyr::mutate(`Weight` = `Value`/portfv) %>% 
+    dplyr::arrange(desc(Weight))
+  
+  ##
+  # process country
+  by_ctry <- portfh2 %>% 
+    dplyr::filter(AssetCategory == 'Equity') %>% 
+    dplyr::left_join(country, by = c("Symbol", "Currency")) %>% 
+    dplyr::mutate(
+      Country2 = ifelse(is.na(Country), "Other", Country),
+      Weight2 = ifelse(is.na(Weight), 100, Weight)
+    ) %>% 
+    dplyr::mutate(`CAD Market Value2` = `CAD.Market.Value` * Weight2 / 100) %>% 
+    dplyr::group_by(Country2) %>% 
+    dplyr::summarise(`Value` = sum(`CAD Market Value2`)) %>% 
+    dplyr::mutate(`Weight` = `Value`/portfv) %>% 
+    dplyr::arrange(desc(Weight))
+  
+  res <- list(
+    by_inst = by_inst,
+    by_acat = by_acat,
+    by_acla = by_acla,
+    by_styl = by_styl,
+    by_sect = by_sect,
+    by_ctry = by_ctry
+  )
+  return(res)
+}
+
+#
 # Retrieve current asset sector
 # 2020/10/01
+# No longer used
 #
-UtilGetPortfSectorDistrib <- function(){
+UtilGetPortfSectorDistrib_OLD <- function(){
   # get asset sector
   tmp <- ReadDataFromSS(db_obj, "MyBroKe_AssetSector")
   asec <- tmp %>% 
@@ -703,8 +792,9 @@ UtilGetPortfSectorDistrib <- function(){
 #
 # Retrieve current asset sector
 # 2020/10/01
+# No longer used
 #
-UtilGetPortfCountryDistrib <- function(){
+UtilGetPortfCountryDistrib_OLD <- function(){
   # get asset sector
   tmp <- ReadDataFromSS(db_obj, "MyBroKe_AssetCountry")
   asec <- tmp %>% 
@@ -733,6 +823,8 @@ UtilGetPortfCountryDistrib <- function(){
   return(ctry_wgt)
   
 }
+
+
 
 #
 # Manual open & close connection

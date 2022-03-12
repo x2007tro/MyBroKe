@@ -76,10 +76,70 @@ output$portfolio_holding_nonforex <- DT::renderDataTable({
     )
 })
 
-output$portfolio_sector <- DT::renderDataTable({
-  tbl2dis <- UtilGetPortfSectorDistrib()
+output$portfolio_instrument <- DT::renderDataTable({
+  tbl2dis <- UtilGertPortfExpo(dbobj)
   DT::datatable(
-    tbl2dis, 
+    tbl2dis$by_inst, 
+    options = list(
+      pageLength = 20,
+      orderClasses = TRUE,
+      searching = TRUE,
+      paging = TRUE
+    ) 
+  ) %>% 
+    DT::formatCurrency(c("Value"), currency = "$", digits = 2) %>% 
+    DT::formatPercentage("Weight", 2)
+})
+
+output$portfolio_assetcat <- DT::renderDataTable({
+  tbl2dis <- UtilGertPortfExpo(dbobj)
+  DT::datatable(
+    tbl2dis$by_acat, 
+    options = list(
+      pageLength = 20,
+      orderClasses = TRUE,
+      searching = TRUE,
+      paging = TRUE
+    ) 
+  ) %>% 
+    DT::formatCurrency(c("Value"), currency = "$", digits = 2) %>% 
+    DT::formatPercentage("Weight", 2)
+})
+
+output$portfolio_assetcla <- DT::renderDataTable({
+  tbl2dis <- UtilGertPortfExpo(dbobj)
+  DT::datatable(
+    tbl2dis$by_acla, 
+    options = list(
+      pageLength = 20,
+      orderClasses = TRUE,
+      searching = TRUE,
+      paging = TRUE
+    ) 
+  ) %>% 
+    DT::formatCurrency(c("Value"), currency = "$", digits = 2) %>% 
+    DT::formatPercentage("Weight", 2)
+})
+
+output$portfolio_sector <- DT::renderDataTable({
+  tbl2dis <- UtilGertPortfExpo(dbobj)
+  DT::datatable(
+    tbl2dis$by_sect, 
+    options = list(
+      pageLength = 20,
+      orderClasses = TRUE,
+      searching = TRUE,
+      paging = TRUE
+    ) 
+  ) %>% 
+    DT::formatCurrency(c("Value"), currency = "$", digits = 2) %>% 
+    DT::formatPercentage("Weight", 2)
+})
+
+output$portfolio_style <- DT::renderDataTable({
+  tbl2dis <- UtilGertPortfExpo(dbobj)
+  DT::datatable(
+    tbl2dis$by_styl, 
     options = list(
       pageLength = 20,
       orderClasses = TRUE,
@@ -92,9 +152,9 @@ output$portfolio_sector <- DT::renderDataTable({
 })
 
 output$portfolio_country <- DT::renderDataTable({
-  tbl2dis <- UtilGetPortfCountryDistrib()
+  tbl2dis <- UtilGertPortfExpo(dbobj)
   DT::datatable(
-    tbl2dis, 
+    tbl2dis$by_ctry, 
     options = list(
       pageLength = 20,
       orderClasses = TRUE,
