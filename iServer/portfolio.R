@@ -92,7 +92,7 @@ output$portfolio_instrument <- DT::renderDataTable({
 })
 
 output$portfolio_assetcat <- DT::renderDataTable({
-  tbl2dis <- UtilGertPortfExpo(dbobj)
+  tbl2dis <- UtilGertPortfExpo(db_obj)
   DT::datatable(
     tbl2dis$by_acat, 
     options = list(
@@ -107,7 +107,7 @@ output$portfolio_assetcat <- DT::renderDataTable({
 })
 
 output$portfolio_assetcla <- DT::renderDataTable({
-  tbl2dis <- UtilGertPortfExpo(dbobj)
+  tbl2dis <- UtilGertPortfExpo(db_obj)
   DT::datatable(
     tbl2dis$by_acla, 
     options = list(
@@ -122,7 +122,7 @@ output$portfolio_assetcla <- DT::renderDataTable({
 })
 
 output$portfolio_sector <- DT::renderDataTable({
-  tbl2dis <- UtilGertPortfExpo(dbobj)
+  tbl2dis <- UtilGertPortfExpo(db_obj)
   DT::datatable(
     tbl2dis$by_sect, 
     options = list(
@@ -137,7 +137,7 @@ output$portfolio_sector <- DT::renderDataTable({
 })
 
 output$portfolio_style <- DT::renderDataTable({
-  tbl2dis <- UtilGertPortfExpo(dbobj)
+  tbl2dis <- UtilGertPortfExpo(db_obj)
   DT::datatable(
     tbl2dis$by_styl, 
     options = list(
@@ -152,7 +152,7 @@ output$portfolio_style <- DT::renderDataTable({
 })
 
 output$portfolio_country <- DT::renderDataTable({
-  tbl2dis <- UtilGertPortfExpo(dbobj)
+  tbl2dis <- UtilGertPortfExpo(db_obj)
   DT::datatable(
     tbl2dis$by_ctry, 
     options = list(
