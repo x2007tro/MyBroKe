@@ -126,7 +126,7 @@ output$portfolio_sector <- DT::renderDataTable({
   DT::datatable(
     tbl2dis$by_sect, 
     options = list(
-      pageLength = 10,
+      pageLength = 12,
       orderClasses = TRUE,
       searching = TRUE,
       paging = TRUE
