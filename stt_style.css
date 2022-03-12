@@ -90,7 +90,8 @@ body {
 .add_trade_list, .add_trade_list_submit{
   width:200px;
 }
-h5{
+.wgt_title{
+  padding:1px 3px;
   background-color:gray;
   color:rgba(255,250,250,1);     /* snow */
   font-weight:bold;
