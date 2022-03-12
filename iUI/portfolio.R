@@ -52,7 +52,7 @@ portfolio_tp <- tabPanel(
             column(
               12,
               shypka.ddiv(
-                tags$h4("Weight by Instrument"),
+                #tags$h4("Weight by Instrument"),
                 DT::dataTableOutput("portfolio_instrument")
               )
             )
