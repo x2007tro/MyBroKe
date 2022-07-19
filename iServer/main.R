@@ -36,7 +36,7 @@ mainServer <- function(input, output, session) {
   ##
   # market trend
   ##
-  source("./iServer/market_trend.R", local = TRUE)
+  #source("./iServer/market_trend.R", local = TRUE)
   
   ##
   # market news (not developed yet)
