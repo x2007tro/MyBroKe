@@ -52,6 +52,12 @@ db_obj <- list(
 )
 
 #
+# load IBKR account code
+#
+tmp_accts <- ReadDataFromSS(db_obj, "MyBrokerAccounts")
+ibkr_acct_code <- tmp_accts[tmp_accts$Type == 'TFSA' & tmp_accts$Active == 1,'Account.Number'][1]
+
+#
 # color scheme
 #
 user_colors <- c("#FE7171", "#28DF99", "#FFC93C")
