@@ -499,9 +499,9 @@ UtilGetEconIndicators <- function(ei_fred, ei_quandl){
 }
 
 ##
-#
+# Old
 ##
-UtilGetPortfPerfor <- function(){
+UtilGetPortfPerfor_Old <- function(){
   
   qry_str <- "SELECT NewMarketDate, `CAD Balance` FROM WebappAdmin.100_020_AccountReconciliationHistory where `security type` = 'NetLiquidation' and currency = 'CAD'"
   dataset <- GetQueryResFromSS(db_obj, qry_str)
@@ -615,6 +615,99 @@ UtilGetPortfPerfor <- function(){
   sinc_cret <- sinc_prcs %>% 
     dplyr::mutate(Return = CADBalance/sinc_prcs$CADBalance[1] - 1) %>% 
     dplyr::mutate(Regime = ifelse(Return < 0, "Negative", ifelse(Return > 0, "Positive", "Flat")))
+  
+  results <- list(
+    update_datetime = Sys.time(),
+    table = rets_tbl,
+    graph = list(
+      ytd = yr_cret,
+      yfn = yrfn_cret,
+      sinc = sinc_cret
+    )
+  )
+  
+  return(results)
+}
+
+##
+# New - 20220809
+##
+UtilGetPortfPerfor <- function(){
+  
+  ##
+  # raw get data from DB
+  #
+  qry_str <- "SELECT NewMarketDate, `CAD Balance` FROM WebappAdmin.100_020_AccountReconciliationHistory where `security type` = 'NetLiquidation' and currency = 'CAD'"
+  dataset <- GetQueryResFromSS(db_obj, qry_str)
+  prcs_df <- dataset %>% 
+    dplyr::mutate(MarketDate = as.Date(NewMarketDate), CADBalance = `CAD Balance`) %>% 
+    dplyr::select(MarketDate, CADBalance)
+  
+  ##
+  # contribution and distribution adjustment
+  #
+  trans <- ReadDataFromSS(db_obj, "MyBroKe_FundTransferHistory") %>% 
+    dplyr::filter(Active == 1) %>% 
+    dplyr::mutate(MarketDate = as.Date(datadate)) %>% 
+    dplyr::select(MarketDate, Method, Amount) 
+  
+  full_trans <- data.frame(
+    MarketDate = seq(min(prcs_df$MarketDate), max(prcs_df$MarketDate), by = 'day')
+  ) %>% 
+    dplyr::left_join(prcs_df, by = c('MarketDate')) %>% 
+    tidyr::fill(CADBalance, .direction = "down")
+
+  ##
+  # date manipulation
+  mkt_dates <- prcs_df$MarketDate
+  ldate <- max(mkt_dates)
+  fdate <- min(mkt_dates)
+  
+  wk_beg <- lubridate::floor_date(ldate, unit = "week")
+  mth_beg <- lubridate::floor_date(ldate, unit = "month")
+  qtr_beg <- lubridate::floor_date(ldate, unit = "quarter")
+  hyr_beg <- lubridate::floor_date(ldate, unit = "halfyear")
+  yr_beg <- lubridate::floor_date(ldate, unit = "year")
+  yrfn_beg <- ldate - 365
+  
+  wk_beg2 <- mkt_dates[max(which(mkt_dates <= wk_beg))]
+  mth_beg2 <- mkt_dates[min(which(mkt_dates >= mth_beg))]
+  qtr_beg2 <- mkt_dates[min(which(mkt_dates >= qtr_beg))]
+  hyr_beg2 <- mkt_dates[min(which(mkt_dates >= hyr_beg))]
+  yr_beg2 <- mkt_dates[min(which(mkt_dates >= yr_beg))]
+  yrfn_beg2 <- mkt_dates[min(which(mkt_dates >= yrfn_beg))]
+  
+  ##
+  # table output
+  twrr_wk <- retcalchelper_TWRR(full_trans, trans, wk_beg2, ldate)
+  twrr_mth <- retcalchelper_TWRR(full_trans, trans, mth_beg2, ldate)
+  twrr_qtr <- retcalchelper_TWRR(full_trans, trans, qtr_beg2, ldate)
+  twrr_hyr <- retcalchelper_TWRR(full_trans, trans, hyr_beg2, ldate)
+  twrr_yr <- retcalchelper_TWRR(full_trans, trans, yr_beg2, ldate)
+  twrr_yrfn <- retcalchelper_TWRR(full_trans, trans, yrfn_beg2, ldate)
+  twrr_all <- retcalchelper_TWRR(full_trans, trans, fdate, ldate)
+  
+  mwrr_wk <- retcalchelper_MWRR(full_trans, trans, wk_beg2, ldate)
+  mwrr_mth <- retcalchelper_MWRR(full_trans, trans, mth_beg2, ldate)
+  mwrr_qtr <- retcalchelper_MWRR(full_trans, trans, qtr_beg2, ldate)
+  mwrr_hyr <- retcalchelper_MWRR(full_trans, trans, hyr_beg2, ldate)
+  mwrr_yr <- retcalchelper_MWRR(full_trans, trans, yr_beg2, ldate)
+  mwrr_yrfn <- retcalchelper_MWRR(full_trans, trans, yrfn_beg2, ldate)
+  mwrr_all <- retcalchelper_MWRR(full_trans, trans, fdate, ldate)
+  
+  rets_tbl <- data.frame(
+    `Time Fame` = c("Week2Date", "Month2Date", "Quarter2Date", "HalfYear2Date", "Year2Date", "1 Year From Now", "Since Inception"),
+    `Start Date` = c(wk_beg2, mth_beg2, qtr_beg2, hyr_beg2, yr_beg2, yrfn_beg2, fdate),
+    `End Date` = rep(ldate, 7),
+    `TWRR` = c(twrr_wk, twrr_mth, twrr_qtr, twrr_hyr, twrr_yr, twrr_yrfn, twrr_all),
+    `MWRR` = c(mwrr_wk, mwrr_mth, mwrr_qtr, mwrr_hyr, mwrr_yr, mwrr_yrfn, mwrr_all)
+  )
+
+  ##
+  # graph output
+  yr_cret <- retcalchelper_avhist(full_trans, trans, yr_beg, ldate)
+  yrfn_cret <- retcalchelper_avhist(full_trans, trans, yrfn_beg, ldate)
+  sinc_cret <- retcalchelper_avhist(full_trans, trans, fdate, ldate)
   
   results <- list(
     update_datetime = Sys.time(),

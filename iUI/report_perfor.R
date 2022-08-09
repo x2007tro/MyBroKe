@@ -8,7 +8,7 @@ perfor_tp <- tabPanel(
     
     # return table
     tabPanel(
-      "Table",
+      "Cumulative Return",
       
       fluidRow(
         column(
@@ -27,7 +27,7 @@ perfor_tp <- tabPanel(
     
     # return curve
     tabPanel(
-      "Graph",
+      "Account Value History",
       
       tabsetPanel(
         tabPanel(
