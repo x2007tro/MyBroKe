@@ -49,12 +49,10 @@ perfor_tp <- tabPanel(
         column(
           12,
           tags$h3('Max Performance'),
-          plotOutput("perfor_graph_ytd")
+          plotOutput("perfor_graph_sinc")
         )
       )
-    
-    )
+    ) 
     # End
   )
-  
 )
