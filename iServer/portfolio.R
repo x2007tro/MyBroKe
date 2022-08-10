@@ -47,7 +47,7 @@ output$portfolio_holding_nonforex <- DT::renderDataTable({
   DT::datatable(
     tbl2dis, 
     options = list(
-      pageLength = 20,
+      pageLength = 50,
       orderClasses = TRUE,
       searching = TRUE,
       paging = TRUE
