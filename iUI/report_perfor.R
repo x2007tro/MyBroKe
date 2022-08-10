@@ -12,7 +12,7 @@ perfor_tp <- tabPanel(
       
       fluidRow(
         column(
-          12,
+          6,
           tags$br(),
           tags$div(
             shypka.ddiv(tags$h5(
@@ -29,39 +29,27 @@ perfor_tp <- tabPanel(
     tabPanel(
       "Account Value History",
       
-      tabsetPanel(
-        tabPanel(
-          "YTD",
-          tags$br(),
-          fluidRow(
-            column(
-              12,
-              plotOutput("perfor_graph_ytd")
-            )
-          )
-          
-        ),
-        tabPanel(
-          "One Year From Now",
-          tags$br(),
-          fluidRow(
-            column(
-              12,
-              plotOutput("perfor_graph_yfn")
-            )
-          )
-          
-        ),
-        tabPanel(
-          "Since Inception",
-          tags$br(),
-          fluidRow(
-            column(
-              12,
-              plotOutput("perfor_graph_sinc")
-            )
-          )
-          
+      fluidRow(
+        column(
+          12,
+          tags$h3('YTD Performance'),
+          plotOutput("perfor_graph_ytd")
+        )
+      ),
+      
+      fluidRow(
+        column(
+          12,
+          tags$h3('Past 1 Year Performance'),
+          plotOutput("perfor_graph_yfn")
+        )
+      ),
+      
+      fluidRow(
+        column(
+          12,
+          tags$h3('Max Performance'),
+          plotOutput("perfor_graph_ytd")
         )
       )
     
