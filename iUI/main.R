@@ -3,7 +3,7 @@
 ##
 ui_files <- c("portfolio", "account_balance", "watchlist", "account_activity", "download",
               "blotter_forex", "blotter_equity", "blotter_option", "blotter_future",
-              "market_trend", "market_news", "ei", "report_perfor",
+              "market_trend", "market_news", "ei", "report_perfor_old",
               "dev", "conf", "guide")
 lapply(ui_files, function(f){
   source(paste0("./iUI/", f, ".R"), local = FALSE)
