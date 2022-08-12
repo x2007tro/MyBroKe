@@ -622,7 +622,7 @@ UtilGetPortfPerfor_OA <- function(){
       `Start Date` = c(min(curr_trans$MarketDate)),
       `End Date` = c(max(curr_trans$MarketDate)),
       `Account Value` = av,
-      `Profit&Loss` = av/(1 + mwrr),
+      `Profit` = av/(1 + mwrr),
       `TWRR` = c(mwrr),
       `MWRR` = c(mwrr)
     )

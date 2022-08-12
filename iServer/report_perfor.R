@@ -52,7 +52,7 @@ output$perfor_table_oa <- DT::renderDataTable({
     DT::formatPercentage('TWRR', 2) %>% 
     DT::formatPercentage('MWRR', 2) %>% 
     DT::formatRound('Account.Value', digits = 0) %>% 
-    DT::formatRound('Profit&Loss', digits = 0)
+    DT::formatRound('Profit', digits = 0)
   
 })
 
