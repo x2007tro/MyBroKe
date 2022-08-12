@@ -51,7 +51,9 @@ output$perfor_table_oa <- DT::renderDataTable({
   ) %>%
     DT::formatPercentage('TWRR', 2) %>% 
     DT::formatPercentage('MWRR', 2) %>% 
-    DT::formatRound('Account.Value', digits = 0)
+    DT::formatRound('Account.Value', digits = 0) %>% 
+    DT::formatRound('Profit&Loss', digits = 0)
+  
 })
 
 output$perfor_graph_ytd <- renderPlot({
@@ -92,22 +94,25 @@ output$perfor_graph_sinc <- renderPlot({
 
 observeEvent(input$ptoa_input_confirm, {
   
-  # Inactivate last account end value
-  my_sql <- paste0("UPDATE `MyBroKe_FundTransferHistoryOA` SET `Active`=0 WHERE `Account` = '", input$ptoa_input_account,"' and `Method` = 'Account Value' and `Period` = 'End'")
-  GetQueryResFromSS(db_obj, my_sql)
+  withProgress(message = 'Adding current account value to DB ...', {
+    # Inactivate last account end value
+    my_sql <- paste0("UPDATE `MyBroKe_FundTransferHistoryOA` SET `Active`=0 WHERE `Account` = '", input$ptoa_input_account,"' and `Method` = 'Account Value' and `Period` = 'End'")
+    GetQueryResFromSS(db_obj, my_sql)
+    
+    # Reinsert new account end value
+    new_rec <- data.frame(
+      datadate = input$ptoa_input_mktdate,
+      Account = input$ptoa_input_account,
+      Method = 'Account Value',
+      Period = 'End',
+      Amount = input$ptoa_input_endav,
+      Active = 1,
+      EntryDatetime = Sys.time(),
+      stringsAsFactors = F
+    )
+    WriteDataToSS(db_obj, new_rec, 'MyBroKe_FundTransferHistoryOA', apd = T)
+    
+    # wait for refresh
+  })
   
-  # Reinsert new account end value
-  new_rec <- data.frame(
-    datadate = input$ptoa_input_mktdate,
-    Account = input$ptoa_input_account,
-    Method = 'Account Value',
-    Period = 'End',
-    Amount = input$ptoa_input_endav,
-    Active = 1,
-    EntryDatetime = Sys.time(),
-    stringsAsFactors = F
-  )
-  WriteDataToSS(db_obj, new_rec, 'MyBroKe_FundTransferHistoryOA', apd = T)
-  
-  # wait for refresh
 })
