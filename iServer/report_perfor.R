@@ -10,6 +10,14 @@ perfor_data <- reactive({
   })
 })
 
+
+perfor_data_oa <- reactive({
+  autoUpdate()
+  withProgress(message = 'Getting other account performance data ...', {
+    dataset2 <- UtilGetPortfPerfor_OA()
+  })
+})
+
 output$last_update_time_perfor_table <- renderText({
   update_datetime <- perfor_data()$update_datetime
   paste0("Last updated: ", format(update_datetime, "%Y-%m-%d %H:%M:%S"))
@@ -28,6 +36,22 @@ output$perfor_table <- DT::renderDataTable({
   ) %>%
     DT::formatPercentage('TWRR', 2) %>% 
     DT::formatPercentage('MWRR', 2)
+})
+
+output$perfor_table_oa <- DT::renderDataTable({
+  rets <- perfor_data_oa()
+  DT::datatable(
+    rets, 
+    options = list(
+      pageLength = 10,
+      orderClasses = FALSE,
+      searching = TRUE,
+      paging = FALSE
+    )
+  ) %>%
+    DT::formatPercentage('TWRR', 2) %>% 
+    DT::formatPercentage('MWRR', 2) %>% 
+    DT::formatRound('Account.Value', digits = 0)
 })
 
 output$perfor_graph_ytd <- renderPlot({
@@ -64,4 +88,26 @@ output$perfor_graph_sinc <- renderPlot({
     scale_x_date(date_labels = "%b %Y", date_breaks = "3 month") + 
     #scale_y_continuous(labels = function(x) scales::label_comma(x)) +
     theme(legend.position = "bottom")
+})
+
+observeEvent(input$ptoa_input_confirm, {
+  
+  # Inactivate last account end value
+  my_sql <- paste0("UPDATE `MyBroKe_FundTransferHistoryOA` SET `Active`=0 WHERE `Account` = '", input$ptoa_input_account,"' and `Method` = 'Account Value' and `Period` = 'End'")
+  GetQueryResFromSS(db_obj, my_sql)
+  
+  # Reinsert new account end value
+  new_rec <- data.frame(
+    datadate = input$ptoa_input_mktdate,
+    Account = input$ptoa_input_account,
+    Method = 'Account Value',
+    Period = 'End',
+    Amount = input$ptoa_input_endav,
+    Active = 1,
+    EntryDatetime = Sys.time(),
+    stringsAsFactors = F
+  )
+  WriteDataToSS(db_obj, new_rec, 'MyBroKe_FundTransferHistoryOA', apd = T)
+  
+  # wait for refresh
 })

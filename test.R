@@ -124,4 +124,4 @@
 #x <- UtilGetStockHistPrcAndRet("AAPL-USD")
 #UtilPlotMarketReturn(x$cumret, "AAPL-USD", "1Y")
 #UtilPlotMarketPrice(x$prc, "AAPL-USD", "1Y")
-# x <- UtilGetPortfPerfor()
+#x <- UtilGetPortfPerfor_OA()

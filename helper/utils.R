@@ -499,137 +499,6 @@ UtilGetEconIndicators <- function(ei_fred, ei_quandl){
 }
 
 ##
-# Old
-##
-UtilGetPortfPerfor_Old <- function(){
-  
-  qry_str <- "SELECT NewMarketDate, `CAD Balance` FROM WebappAdmin.100_020_AccountReconciliationHistory where `security type` = 'NetLiquidation' and currency = 'CAD'"
-  dataset <- GetQueryResFromSS(db_obj, qry_str)
-  prcs_df <- dataset %>% 
-    dplyr::mutate(MarketDate = as.Date(NewMarketDate), CADBalance = `CAD Balance`) %>% 
-    dplyr::select(MarketDate, CADBalance)
-  
-  ##
-  # contribution and distribution adjustment
-  #
-  trans <- ReadDataFromSS(db_obj, "MyBroKe_FundTransferHistory") %>% 
-    dplyr::filter(Active == 1) %>% 
-    dplyr::mutate(MarketDate = as.Date(datadate)) %>% 
-    dplyr::select(MarketDate, Amount) 
-  full_trans <- data.frame(
-    MarketDate = seq(min(prcs_df$MarketDate), max(prcs_df$MarketDate), by = 'day')
-  ) %>% 
-    dplyr::left_join(prcs_df, by = c('MarketDate')) %>% 
-    tidyr::fill(CADBalance, .direction = "up")
-  
-  for(i in 1:nrow(trans)){
-    curr_trans <- trans[i,]
-    full_trans <- full_trans %>% 
-      dplyr::left_join(curr_trans, by = c('MarketDate')) %>% 
-      dplyr::mutate(ratio = (CADBalance - Amount)/CADBalance) %>% 
-      dplyr::select(-Amount)
-    colnames(full_trans) <- c('MarketDate','CADBalance',paste0('Ratio',1:i))
-  }
-  
-  full_trans <- full_trans %>% 
-    tidyr::fill(colnames(full_trans), .direction = "down")
-  full_trans[is.na(full_trans)] <- 1
-  
-  full_trans <- full_trans %>% 
-    dplyr::mutate(OriCADBalance = CADBalance)
-  for(i in 1:nrow(trans)){
-    full_trans <- full_trans %>% 
-      dplyr::mutate(CADBalance = CADBalance*.data[[paste0("Ratio",i)]])
-  }
-  
-  ##
-  # table output
-  
-  # date manipulation
-  mkt_dates <- prcs_df$MarketDate
-  ldate <- max(mkt_dates)
-  fdate <- min(mkt_dates)
-  
-  wk_beg <- lubridate::floor_date(ldate, unit = "week")
-  mth_beg <- lubridate::floor_date(ldate, unit = "month")
-  qrt_beg <- lubridate::floor_date(ldate, unit = "quarter")
-  hyr_beg <- lubridate::floor_date(ldate, unit = "halfyear")
-  yr_beg <- lubridate::floor_date(ldate, unit = "year")
-  yrfn_beg <- ldate - 365
-  
-  wk_beg2 <- mkt_dates[max(which(mkt_dates <= wk_beg))]
-  mth_beg2 <- mkt_dates[min(which(mkt_dates >= mth_beg))]
-  qrt_beg2 <- mkt_dates[min(which(mkt_dates >= qrt_beg))]
-  hyr_beg2 <- mkt_dates[min(which(mkt_dates >= hyr_beg))]
-  yr_beg2 <- mkt_dates[min(which(mkt_dates >= yr_beg))]
-  yrfn_beg2 <- mkt_dates[min(which(mkt_dates >= yrfn_beg))]
-  
-  prc_ldate <- prcs_df$CADBalance[mkt_dates == ldate]
-  prc_wk_beg <- prcs_df$CADBalance[mkt_dates == wk_beg2]
-  prc_mth_beg <- prcs_df$CADBalance[mkt_dates == mth_beg2]
-  prc_qrt_beg <- prcs_df$CADBalance[mkt_dates == qrt_beg2]
-  prc_hyr_beg <- prcs_df$CADBalance[mkt_dates == hyr_beg2]
-  prc_yr_beg <- prcs_df$CADBalance[mkt_dates == yr_beg2]
-  prc_yrfn_beg <- prcs_df$CADBalance[mkt_dates == yrfn_beg2]
-  prc_fdate <- prcs_df$CADBalance[mkt_dates == fdate]
-  
-  rets_tbl <- data.frame(
-    `Time Fame` = c("Week2Date", "Month2Date", "Quarter2Date", "HalfYear2Date", "Year2Date", "1 Year From Now", "Since Inception"),
-    `Start Date` = c(wk_beg2, mth_beg2, qrt_beg2, hyr_beg2, yr_beg2, yrfn_beg2, fdate),
-    `End Date` = rep(ldate, 7),
-    `Return` = c(
-      (prc_ldate - prc_wk_beg)/abs(prc_wk_beg),
-      (prc_ldate - prc_mth_beg)/abs(prc_mth_beg),
-      (prc_ldate - prc_qrt_beg)/abs(prc_qrt_beg),
-      (prc_ldate - prc_hyr_beg)/abs(prc_hyr_beg),
-      (prc_ldate - prc_yr_beg)/abs(prc_yr_beg),
-      (prc_ldate - prc_yrfn_beg)/abs(prc_yrfn_beg),
-      (prc_ldate - prc_fdate)/abs(prc_fdate)
-    )
-  )
-  
-  # graph output
-  yr_prcs <- prcs_df[prcs_df$MarketDate >= yr_beg,]
-  yrfn_prcs <- prcs_df[prcs_df$MarketDate >= yrfn_beg,]
-  sinc_prcs <- prcs_df
-  
-  # not used yet
-  if(TRUE){
-    yr_prcs_ts <- xts::xts(yr_prcs$CADBalance, yr_prcs$MarketDate)
-    yrfn_prcs_ts <- xts::xts(yrfn_prcs$CADBalance, yrfn_prcs$MarketDate)
-    sinc_prcs_ts <- xts::xts(sinc_prcs$CADBalance, sinc_prcs$MarketDate)
-    
-    yr_prcs <- yr_prcs[c(1, xts::endpoints(yr_prcs_ts, on = "month")[-1]),]
-    yrfn_prcs <- yrfn_prcs[c(1, xts::endpoints(yrfn_prcs_ts, on = "month")[-1]),]
-    sinc_prcs <- sinc_prcs[c(1, xts::endpoints(sinc_prcs_ts, on = "month")[-1]),]
-  }
-  
-  yr_cret <- yr_prcs %>% 
-    dplyr::mutate(Return = CADBalance/yr_prcs$CADBalance[1] - 1) %>% 
-    dplyr::mutate(Regime = ifelse(Return < 0, "Negative", ifelse(Return > 0, "Positive", "Flat")))
-  
-  yrfn_cret <- yrfn_prcs %>% 
-    dplyr::mutate(Return = CADBalance/yrfn_prcs$CADBalance[1] - 1) %>% 
-    dplyr::mutate(Regime = ifelse(Return < 0, "Negative", ifelse(Return > 0, "Positive", "Flat")))
-  
-  sinc_cret <- sinc_prcs %>% 
-    dplyr::mutate(Return = CADBalance/sinc_prcs$CADBalance[1] - 1) %>% 
-    dplyr::mutate(Regime = ifelse(Return < 0, "Negative", ifelse(Return > 0, "Positive", "Flat")))
-  
-  results <- list(
-    update_datetime = Sys.time(),
-    table = rets_tbl,
-    graph = list(
-      ytd = yr_cret,
-      yfn = yrfn_cret,
-      sinc = sinc_cret
-    )
-  )
-  
-  return(results)
-}
-
-##
 # New - 20220809
 ##
 UtilGetPortfPerfor <- function(){
@@ -718,6 +587,48 @@ UtilGetPortfPerfor <- function(){
       sinc = sinc_cret
     )
   )
+  
+  return(results)
+}
+
+##
+# New - 20220809
+##
+UtilGetPortfPerfor_OA <- function(){
+  
+  ##
+  # load the dataset
+  #
+  trans <- ReadDataFromSS(db_obj, "MyBroKe_FundTransferHistoryOA") %>% 
+    dplyr::filter(Active == 1) %>% 
+    dplyr::mutate(MarketDate = as.Date(datadate)) %>% 
+    dplyr::mutate(RevAmount = ifelse(Method == 'Account Value' & Period == 'End', -Amount, Amount)) 
+  
+  uniq_acts <- unique(trans$Account)
+  tmp <- lapply(1:length(uniq_acts), function(i){
+    
+    curr_acct <- uniq_acts[i]
+    curr_trans <- trans %>% 
+      dplyr::filter(Account == curr_acct) %>% 
+      dplyr::arrange(MarketDate)
+    
+    avdf <- curr_trans %>% 
+      dplyr::filter(Method == 'Account Value' & Period == 'End')
+    av <- mean(avdf$Amount)
+    mwrr <- xirr(curr_trans$RevAmount, curr_trans$MarketDate)
+    
+    rets_tbl <- data.frame(
+      `Account` = c(curr_acct),
+      `Start Date` = c(min(curr_trans$MarketDate)),
+      `End Date` = c(max(curr_trans$MarketDate)),
+      `Account Value` = av,
+      `TWRR` = c(mwrr),
+      `MWRR` = c(mwrr)
+    )
+    
+    return(rets_tbl)
+  })
+  results <- dplyr::bind_rows(tmp)
   
   return(results)
 }

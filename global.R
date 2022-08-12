@@ -13,6 +13,7 @@ brewed_colors <- rep(RColorBrewer::brewer.pal(n = 9, name = "Set3"), 100)
 button_field_default_width <- "100px"
 blotter_field_default_width <- "150px"
 blotter_field_default_width_wide <- "250px"
+perfor_table_oa_input_width <- "150px"
 
 # equity blotter
 eq_max_blotter_size <- 10
@@ -66,6 +67,10 @@ names(user_colors) <- c("Negative", "Positive", "Flat")
 ##
 # Obtain tradable currencies from DB
 tradable_curr <- unique(ReadDataFromSS(db_obj, "MyBroKe_CashBalanceMap")$Currency)
+
+##
+# accounts
+other_broker_accounts <- c('LIRA Ke', 'RRSP Ke', 'RRSP Tong', 'TFSA Ke', 'TFSA Tong')
 
 #
 # Load API keys
