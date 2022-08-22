@@ -3,7 +3,7 @@
 ##
 output$download_file_selector <- renderUI({
   selectInput("dataset", "Choose a dataset:", 
-              choices = names(port_info())[-1])
+              choices = names(portf1_info())[-1])
 })
 
 output$download_data <- downloadHandler(
@@ -19,6 +19,6 @@ output$download_data <- downloadHandler(
   content = function(file) {
     
     # Write to a file specified by the 'file' argument
-    write.csv(port_info()[[input$dataset]], file, row.names = FALSE)
+    write.csv(portf1_info()[[input$dataset]], file, row.names = FALSE)
   }
 )

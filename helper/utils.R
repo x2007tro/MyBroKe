@@ -5,11 +5,12 @@
 #
 # Get portfolio data
 # 
-UtilGetPortfolio <- function(){
-  ts_tmp <- IBTradingSession$new(11, platform, acct)
+UtilGetPortfolio <- function(acct_number){
+  ts_tmp <- IBTradingSession$new(22, platform, acct)
   ts_tmp$
-    TSSetTransmit(FALSE)$                       #Prevert trade from actually happening
-    TSUpdateAccountDetail()$
+    TSSetTransmit(FALSE)                       #Prevert trade from actually happening
+    
+  ts_tmp$TSUpdateAccountDetail(acct_number)$
     TSCloseTradingSession()
   
   return(list(update_datetime = Sys.time(),
@@ -23,8 +24,8 @@ UtilGetPortfolio <- function(){
 #
 # Find current holding
 #
-UtilFindCurrentHolding <- function(ticker, curr, sec_type){
-  port <- UtilGetPortfolio()$holdings_nonforex
+UtilFindCurrentHolding <- function(acct_number, ticker, curr, sec_type){
+  port <- UtilGetPortfolio(acct_number)$holdings_nonforex
   if(nrow(port) == 0){
     pos <- 0
   } else {
@@ -40,10 +41,10 @@ UtilFindCurrentHolding <- function(ticker, curr, sec_type){
 }
 
 #
-# Find current holding
+# Find current cash balance
 #
-UtilFindCashBalance <- function(currency){
-  port <- UtilGetPortfolio()$cash_balance
+UtilFindCashBalance <- function(acct_number, currency){
+  port <- UtilGetPortfolio(acct_number)$cash_balance
   if(nrow(port) == 0){
     pos <- 0
   } else {
@@ -61,9 +62,9 @@ UtilFindCashBalance <- function(currency){
 #
 # Retrieve contract details
 #
-UtilGetContractDetails <- function(sym, cur = "", sec_type){
-  ts_tmp <- IBTradingSession$new(10, platform, acct)
-  res <- ts_tmp$TSGetContractDetails(sym, cur, sec_type)
+UtilGetContractDetails <- function(acct_number, sym, cur = "", sec_type){
+  ts_tmp <- IBTradingSession$new(22, platform, acct)
+  res <- ts_tmp$TSGetContractDetails(acct_number, sym, cur, sec_type)
   ts_tmp$TSCloseTradingSession()
   return(res)
 }
@@ -499,16 +500,30 @@ UtilGetEconIndicators <- function(ei_fred, ei_quandl){
 }
 
 ##
+# New - 20220821
+##
+UtilGetPortfPerfor <- function(acct_numbers){
+  
+  tmp <- lapply(acct_numbers, function(an){
+    UtilGetPortfPerforCore(an)
+  })
+  names(tmp) <- acct_numbers
+  
+  return(tmp)
+}
+
+##
 # New - 20220809
 ##
-UtilGetPortfPerfor <- function(){
+UtilGetPortfPerforCore <- function(acct_number){
   
   ##
   # raw get data from DB
   #
-  qry_str <- "SELECT NewMarketDate, `CAD Balance` FROM WebappAdmin.100_020_AccountReconciliationHistory where `security type` = 'NetLiquidation' and currency = 'CAD'"
+  qry_str <- "SELECT NewMarketDate, `Account Number`, `CAD Balance` FROM WebappAdmin.100_020_AccountReconciliationHistory where `security type` = 'NetLiquidation' and currency = 'CAD'"
   dataset <- GetQueryResFromSS(db_obj, qry_str)
   prcs_df <- dataset %>% 
+    dplyr::filter(`Account Number` == acct_number) %>% 
     dplyr::mutate(MarketDate = as.Date(NewMarketDate), CADBalance = `CAD Balance`) %>% 
     dplyr::select(MarketDate, CADBalance)
   
@@ -517,6 +532,7 @@ UtilGetPortfPerfor <- function(){
   #
   trans <- ReadDataFromSS(db_obj, "MyBroKe_FundTransferHistory") %>% 
     dplyr::filter(Active == 1) %>% 
+    dplyr::filter(`Account.Number` == acct_number) %>% 
     dplyr::mutate(MarketDate = as.Date(datadate)) %>% 
     dplyr::select(MarketDate, Method, Amount) 
   
@@ -565,7 +581,8 @@ UtilGetPortfPerfor <- function(){
   mwrr_all <- retcalchelper_MWRR(full_trans, trans, fdate, ldate)
   
   rets_tbl <- data.frame(
-    `Time Fame` = c("Week2Date", "Month2Date", "Quarter2Date", "HalfYear2Date", "Year2Date", "1 Year From Now", "Since Inception"),
+    `Account` = acct_number,
+    `Time Frame` = c("Week2Date", "Month2Date", "Quarter2Date", "HalfYear2Date", "Year2Date", "1 Year From Now", "Since Inception"),
     `Start Date` = c(wk_beg2, mth_beg2, qtr_beg2, hyr_beg2, yr_beg2, yrfn_beg2, fdate),
     `End Date` = rep(ldate, 7),
     `TWRR` = c(twrr_wk, twrr_mth, twrr_qtr, twrr_hyr, twrr_yr, twrr_yrfn, twrr_all),
@@ -580,6 +597,7 @@ UtilGetPortfPerfor <- function(){
   
   results <- list(
     update_datetime = Sys.time(),
+    account_number = acct_number,
     table = rets_tbl,
     graph = list(
       ytd = yr_cret,
@@ -599,17 +617,24 @@ UtilGetPortfPerfor_OA <- function(){
   ##
   # load the dataset
   #
-  trans <- ReadDataFromSS(db_obj, "MyBroKe_FundTransferHistoryOA") %>% 
+  accts <- ReadDataFromSS(db_obj, "MyBroKe_Accounts") %>% 
+    dplyr::select(`Account.Number`, `Alias`)
+  
+  trans <- ReadDataFromSS(db_obj, "MyBroKe_FundTransferHistoryOA") 
+  
+  trans <- trans %>%
+    dplyr::left_join(accts, by = "Account.Number") %>% 
     dplyr::filter(Active == 1) %>% 
     dplyr::mutate(MarketDate = as.Date(datadate)) %>% 
-    dplyr::mutate(RevAmount = ifelse(Method == 'Account Value' & Period == 'End', -Amount, Amount)) 
+    dplyr::mutate(RevAmount = ifelse(Method == 'Account Value' & Period == 'End', -Amount, Amount))
   
-  uniq_acts <- unique(trans$Account)
+  uniq_acts <- unique(trans$`Account.Number`)
   tmp <- lapply(1:length(uniq_acts), function(i){
     
     curr_acct <- uniq_acts[i]
+    curr_acct_alias <- accts[accts$`Account.Number` == curr_acct,'Alias'][1]
     curr_trans <- trans %>% 
-      dplyr::filter(Account == curr_acct) %>% 
+      dplyr::filter(`Account.Number` == curr_acct) %>% 
       dplyr::arrange(MarketDate)
     
     avdf <- curr_trans %>% 
@@ -618,9 +643,10 @@ UtilGetPortfPerfor_OA <- function(){
     mwrr <- xirr(curr_trans$RevAmount, curr_trans$MarketDate)
     
     rets_tbl <- data.frame(
-      `Account` = c(curr_acct),
       `Start Date` = c(min(curr_trans$MarketDate)),
       `End Date` = c(max(curr_trans$MarketDate)),
+      `Account Number` = curr_acct,
+      `Account Alias` = curr_acct_alias,
       `Account Value` = av,
       `Profit` = av - av/(1 + mwrr),
       `TWRR` = c(mwrr),
@@ -651,7 +677,7 @@ UtilPostCurrHoldings <- function(porfobj, dbobj){
   
   # get portf holding first
   portf <- hd %>% 
-    dplyr::select(`Market Date`, `Symbol`, `Security Type`, Currency, `Market Value`) %>% 
+    dplyr::select(`Market Date`, `Account Number`, `Symbol`, `Security Type`, Currency, `Market Value`) %>% 
     dplyr::left_join(er, by = "Currency") %>% 
     dplyr::mutate(
       `CAD Market Value` = `Market Value` * `Exchange Rate`,
@@ -675,7 +701,7 @@ UtilPostCurrHoldings <- function(porfobj, dbobj){
 #
 #
 #
-UtilGertPortfExpo <- function(dbobj){
+UtilGertPortfExpo <- function(dbobj, acct_number){
   
   ##
   # Get portfolio holding
@@ -705,6 +731,7 @@ UtilGertPortfExpo <- function(dbobj){
   ##
   # further processing
   portfh2 <- portfh %>% 
+    dplyr::filter(Account.Number == acct_number) %>% 
     dplyr::filter(`Active` == 1 & `Trade.Mode` == acct & `Application.Status` == ts_static$ts_app_status) %>% 
     dplyr::select(Symbol, Currency, `Security.Type`, `CAD.Market.Value`) %>% 
     dplyr::left_join(char, by = c("Symbol", "Currency")) %>% 
@@ -791,41 +818,6 @@ UtilGetPortfSectorDistrib_OLD <- function(){
   #WriteDataToSS(db_obj, sec_wgt, "temp", apd = TRUE)
   
   return(sec_wgt)
-  
-}
-
-#
-# Retrieve current asset sector
-# 2020/10/01
-# No longer used
-#
-UtilGetPortfCountryDistrib_OLD <- function(){
-  # get asset sector
-  tmp <- ReadDataFromSS(db_obj, "MyBroKe_AssetCountry")
-  asec <- tmp %>% 
-    dplyr::filter(`Active` == 1) %>% 
-    dplyr::select(Symbol, Currency, Country, Weight) %>% 
-    dplyr::arrange(desc(Weight))
-  
-  # get portfolio current assets
-  tmp <- ReadDataFromSS(db_obj, "MyBroKe_PortfolioHoldings")
-  ctry_wgt <- tmp %>% 
-    dplyr::filter(`Active` == 1 & `Security.Type` != "OPT" & `Trade.Mode` == acct & `Application.Status` == ts_static$ts_app_status) %>% 
-    dplyr::select(Symbol, Currency, `CAD.Market.Value`) %>% 
-    dplyr::left_join(asec, by = c("Symbol", "Currency")) %>% 
-    dplyr::mutate(
-      Country2 = ifelse(is.na(Country), "Other", Country),
-      Weight2 = ifelse(is.na(Weight), 100, Weight)
-    ) %>% 
-    dplyr::mutate(`CAD Market Value2` = `CAD.Market.Value` * Weight2 / 100) %>% 
-    dplyr::group_by(Country2) %>% 
-    dplyr::summarise(`Value` = sum(`CAD Market Value2`)) %>% 
-    dplyr::mutate(`Weight` = `Value`/sum(`Value`)) %>% 
-    dplyr::arrange(desc(Weight))
-  
-  #WriteDataToSS(db_obj, sec_wgt, "temp", apd = TRUE)
-  
-  return(ctry_wgt)
   
 }
 

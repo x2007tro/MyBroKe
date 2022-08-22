@@ -1,7 +1,7 @@
 ##
 # Source all ui files
 ##
-ui_files <- c("portfolio", "account_balance", "watchlist", "account_activity", "download",
+ui_files <- c("portf1", "portf2", "account_balance", "watchlist", "account_activity", "download",
               "blotter_forex", "blotter_equity", "blotter_option", "blotter_future",
               "market_trend", "market_news", "ei", "report_perfor",
               "dev", "conf", "guide")
@@ -20,7 +20,7 @@ mainUI <- fluidPage(theme = shinythemes::shinytheme("simplex"),
   ),
   
   navbarPage(
-    "MyBroKe",
+    "MyBroKerrr",
     
     ##
     # Main panel
@@ -30,15 +30,16 @@ mainUI <- fluidPage(theme = shinythemes::shinytheme("simplex"),
       navlistPanel(
         widths = c(2,10),
         
-        "Account",
-        portfolio_tp,
-        balance_tp,
+        "Porfolios",
+        portf1_tp,
+        portf2_tp,
         watchlist_tp,
-        account_activity_tp,
-        download_tp,
         
         "Report",
         perfor_tp,
+        balance_tp,
+        account_activity_tp,
+        download_tp,
         
         "Trade",
         forex_blotter_tp,
@@ -48,7 +49,7 @@ mainUI <- fluidPage(theme = shinythemes::shinytheme("simplex"),
 
         "Market",
         market_trend_tp,
-        #market_news_tp,
+        market_news_tp,
         ei_tp
       )
     ),

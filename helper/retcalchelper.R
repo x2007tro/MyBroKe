@@ -120,31 +120,35 @@ retcalchelper_TWRR <- function(acct_bal, cf, fdate, ldate){
   cf2_timing <- comb_cf$MarketDate[!is.na(comb_cf$Cashflow2)]
   cf2_timing <- c(cf2_timing, ldate)
   
-  tmp <- 1
-  for(i in 1:length(cf2_timing)){
-    t <- cf2_timing[i]
-    if(i == 1){
-      tgt_dates <- c(fdate, t)
-      subset_cf <- comb_cf %>% 
-        dplyr::filter(MarketDate %in% tgt_dates)
-      tgt_df <- data.frame(
-        MarketDate = tgt_dates,
-        Cashflow = c(subset_cf$Cashflow1[1], -subset_cf$Cashflow1[2])
-      )
-    } else {
-      tgt_dates <- c(cf2_timing[i-1], t)
-      subset_cf <- comb_cf %>% 
-        dplyr::filter(MarketDate %in% tgt_dates)
-      tgt_df <- data.frame(
-        MarketDate = tgt_dates,
-        Cashflow = c(subset_cf$Cashflow1[1] + subset_cf$Cashflow2[1], -subset_cf$Cashflow1[2])
-      )
+  #if(length(unique(cf2_timing)) == 1){
+  #  twrr <- 0
+  #} else {
+    tmp <- 1
+    for(i in 1:length(cf2_timing)){
+      t <- cf2_timing[i]
+      if(i == 1){
+        tgt_dates <- c(fdate, t)
+        subset_cf <- comb_cf %>% 
+          dplyr::filter(MarketDate %in% tgt_dates)
+        tgt_df <- data.frame(
+          MarketDate = tgt_dates,
+          Cashflow = c(subset_cf$Cashflow1[1], -subset_cf$Cashflow1[2])
+        )
+      } else {
+        tgt_dates <- c(cf2_timing[i-1], t)
+        subset_cf <- comb_cf %>% 
+          dplyr::filter(MarketDate %in% tgt_dates)
+        tgt_df <- data.frame(
+          MarketDate = tgt_dates,
+          Cashflow = c(subset_cf$Cashflow1[1] + subset_cf$Cashflow2[1], -subset_cf$Cashflow1[2])
+        )
+      }
+      #cret <- tgt_df$Cashflow[2]/tgt_df$Cashflow[1]
+      cret <- xirr(tgt_df$Cashflow, tgt_df$MarketDate) + 1
+      tmp <- cret * tmp
     }
-    #cret <- tgt_df$Cashflow[2]/tgt_df$Cashflow[1]
-    cret <- xirr(tgt_df$Cashflow, tgt_df$MarketDate) + 1
-    tmp <- cret * tmp
-  }
-  twrr <- tmp - 1
+    twrr <- tmp - 1
+  #}
   
   return(twrr)
 }

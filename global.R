@@ -55,8 +55,11 @@ db_obj <- list(
 #
 # load IBKR account code
 #
-tmp_accts <- ReadDataFromSS(db_obj, "MyBrokerAccounts")
-ibkr_acct_code <- tmp_accts[tmp_accts$Type == 'TFSA' & tmp_accts$Active == 1,'Account.Number'][1]
+tmp_accts <- ReadDataFromSS(db_obj, "MyBroKe_Accounts")
+acct_number1 <- tmp_accts[tmp_accts$Account.Number == 'U1989090','Account.Number'][1]
+acct_number2 <- tmp_accts[tmp_accts$Account.Number == 'U10048362','Account.Number'][1]
+acct_alias1 <- tmp_accts[tmp_accts$Account.Number == 'U1989090','Alias'][1]
+acct_alias2 <-tmp_accts[tmp_accts$Account.Number == 'U10048362','Alias'][1]
 
 #
 # color scheme
@@ -70,7 +73,9 @@ tradable_curr <- unique(ReadDataFromSS(db_obj, "MyBroKe_CashBalanceMap")$Currenc
 
 ##
 # accounts
-other_broker_accounts <- c('LIRA Ke', 'RRSP Ke', 'RRSP Tong', 'TFSA Ke', 'TFSA Tong')
+other_broker_account_alias <- c('LIRA Ke', 'TFSA Tong')
+other_broker_account_numbers <- tmp_accts[tmp_accts$Alias %in% other_broker_account_alias,'Account.Number']
+names(other_broker_account_numbers) <- other_broker_account_alias
 
 #
 # Load API keys

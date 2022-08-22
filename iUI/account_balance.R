@@ -6,27 +6,38 @@ balance_tp <- tabPanel(
   tabsetPanel(
     
     tabPanel(
-      "Balance Reconciliation",
+      acct_alias1,
       
       fluidRow(
         column(
           12,
-          tags$div(DT::dataTableOutput("account_recon"))
+          tags$div(DT::dataTableOutput("acc_bal_acct1"))
         )
       )
     ), # end of panel 1
     
     tabPanel(
-      "Raw Metrics",
+      acct_alias2,
       
       fluidRow(
         column(
           12,
-          tags$div(DT::dataTableOutput("raw_metrics"))
+          tags$div(DT::dataTableOutput("acc_bal_acct2"))
+        )
+      )
+    ), # end of panel 1
+
+    tabPanel(
+      'Aggregate',
+      
+      fluidRow(
+        column(
+          12,
+          tags$div(DT::dataTableOutput("acc_bal_aggr"))
         )
       )
     ) # end of panel 1
-
+    
   ) # end of tabset panel
               
   

@@ -6,7 +6,12 @@ mainServer <- function(input, output, session) {
   ##
   # portfolio initialization
   ##
-  source("./iServer/portfolio.R", local = TRUE)
+  source("./iServer/portf1.R", local = TRUE)
+  
+  ##
+  # portfolio initialization
+  ##
+  source("./iServer/portf2.R", local = TRUE)
   
   ##
   # blotter

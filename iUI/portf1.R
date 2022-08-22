@@ -1,8 +1,8 @@
 ##
 # Portfolio tabpanel
 ##
-portfolio_tp <- tabPanel(
-  "Holding",
+portf1_tp <- tabPanel(
+  acct_alias1,
   
   tabsetPanel(
     tabPanel(
@@ -16,15 +16,15 @@ portfolio_tp <- tabPanel(
             
             shypka.ddiv(tags$h5(
               style = "padding:4px",
-              textOutput("last_update_time_nonforex")
+              textOutput("portf1_last_update_time_nonforex")
             ), color = "#ffe4e1"),    #misty rose
             
             shypka.ddiv(
-              DT::dataTableOutput("portfolio_holding_nonforex")
+              DT::dataTableOutput("portf1_holding_nonforex")
             ),
             
             shypka.ddiv(
-              actionButton(class = "btn-primary","add_trade_list_submit", "Add to blotter", width = "150px")
+              actionButton(class = "btn-primary","portf1_add_trade_list_submit", "Add to blotter", width = "150px")
             )
           )
         )
@@ -39,7 +39,7 @@ portfolio_tp <- tabPanel(
           12,
           shypka.ddiv(tags$h5(
             style = "padding:4px",
-            textOutput("last_update_time_sector")
+            textOutput("portf1_last_update_time_sector")
           ), color = "#ffe4e1")    #misty rose
         )
       ),
@@ -53,7 +53,7 @@ portfolio_tp <- tabPanel(
               12,
               tags$h5(class = 'wgt_title', "Weight by Instrument"),
               shypka.ddiv(
-                DT::dataTableOutput("portfolio_instrument")
+                DT::dataTableOutput("portf1_instrument")
               )
             )
           ),
@@ -63,7 +63,7 @@ portfolio_tp <- tabPanel(
               12,
               tags$h5(class = 'wgt_title', "Weight by Asset Category"),
               shypka.ddiv(
-                DT::dataTableOutput("portfolio_assetcat")
+                DT::dataTableOutput("portf1_assetcat")
               )
             )
           ),
@@ -73,7 +73,7 @@ portfolio_tp <- tabPanel(
               12,
               tags$h5(class = 'wgt_title', "Weight by Asset Class"),
               shypka.ddiv(
-                DT::dataTableOutput("portfolio_assetcla")
+                DT::dataTableOutput("portf1_assetcla")
               )
             )
           )
@@ -88,7 +88,7 @@ portfolio_tp <- tabPanel(
               12,
               tags$h5(class = 'wgt_title', "Weight by Investment Style"),
               shypka.ddiv(
-                DT::dataTableOutput("portfolio_style")
+                DT::dataTableOutput("portf1_style")
               )
             )
           ),
@@ -98,7 +98,7 @@ portfolio_tp <- tabPanel(
               12,
               tags$h5(class = 'wgt_title', "Weight by Sector (Equities Only)"),
               shypka.ddiv(
-                DT::dataTableOutput("portfolio_sector")
+                DT::dataTableOutput("portf1_sector")
               )
             )
           )
@@ -112,7 +112,7 @@ portfolio_tp <- tabPanel(
               12,
               tags$h5(class = 'wgt_title', "Weight by Country (Equities Only)"),
               shypka.ddiv(
-                DT::dataTableOutput("portfolio_country")
+                DT::dataTableOutput("portf1_country")
               )
             )
           )
@@ -130,11 +130,11 @@ portfolio_tp <- tabPanel(
           12,
           shypka.ddiv(tags$h5(
             style = "padding:4px",
-            textOutput("last_update_time_forex")
+            textOutput("portf1_last_update_time_forex")
           ), color = "#ffe4e1"),    #misty rose
           
           shypka.ddiv(
-            DT::dataTableOutput("portfolio_holding_forex")
+            DT::dataTableOutput("portf1_holding_forex")
           )
         )
       )
@@ -148,11 +148,11 @@ portfolio_tp <- tabPanel(
           12,
           shypka.ddiv(tags$h5(
             style = "padding:4px",
-            textOutput("last_update_time_cashbal")
+            textOutput("portf1_last_update_time_cashbal")
           ), color = "#ffe4e1"),    #misty rose
           
           shypka.ddiv(
-            DT::dataTableOutput("portfolio_cash_balance")
+            DT::dataTableOutput("portf1_cash_balance")
           )
         )
       )

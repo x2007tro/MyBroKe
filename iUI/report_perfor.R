@@ -8,25 +8,90 @@ perfor_tp <- tabPanel(
     
     # return table
     tabPanel(
-      "Cumulative Return",
+      "MWRR",
       
       fluidRow(
         column(
           12,
           tags$br(),
           tags$div(
-            shypka.ddiv(tags$h5(
-              style = "padding:4px",
-              textOutput("last_update_time_perfor_table")
-            ), color = "#ffe4e1"),
             
             fluidRow(
               column(
-                6,
-                DT::dataTableOutput("perfor_table")
+                4,
+                plotOutput("mwrr_graph_acct1")
               ),
               column(
-                6,
+                4,
+                plotOutput("mwrr_graph_acct2")
+              ),
+              column(
+                4,
+                plotOutput('mwrr_graph_all')
+              )
+            )
+          )
+        )
+      )
+    ),
+    
+    # return table
+    tabPanel(
+      "TWRR",
+
+      fluidRow(
+        column(
+          12,
+          tags$br(),
+          tags$div(
+            
+            fluidRow(
+              column(
+                4,
+                plotOutput("twrr_graph_acct1")
+              ),
+              column(
+                4,
+                plotOutput("twrr_graph_acct2")
+              ),
+              column(
+                4,
+                plotOutput('twrr_graph_all')
+              )
+            )
+          )
+        )
+      )
+    ),
+    
+    # return table
+    tabPanel(
+      "Return Table",
+      
+      fluidRow(
+        column(
+          12,
+          tags$br(),
+          tags$div(
+            # shypka.ddiv(tags$h5(
+            #   style = "padding:4px",
+            #   textOutput("last_update_time_perfor_table2")
+            # ), color = "#ffe4e1"),
+            
+            fluidRow(
+              column(
+                4,
+                tags$h3(acct_alias1),
+                DT::dataTableOutput("perfor_table_acct1")
+              ),
+              column(
+                4,
+                tags$h3(acct_alias2),
+                DT::dataTableOutput("perfor_table_acct2")
+              ),
+              column(
+                4,
+                tags$h3('Other Accounts'),
                 DT::dataTableOutput('perfor_table_oa'),
                 tags$hr(),
                 tags$div(
@@ -34,7 +99,7 @@ perfor_tp <- tabPanel(
                   fluidRow(
                     column(
                       3,
-                      tags$div(class = "perfor_table_oa_input", selectInput(paste0('ptoa_input_account'), "Account", choices = other_broker_accounts, selected = other_broker_accounts[1], width = perfor_table_oa_input_width))
+                      tags$div(class = "perfor_table_oa_input", selectInput(paste0('ptoa_input_account'), "Account", choices = other_broker_account_alias, selected = other_broker_account_alias[1], width = perfor_table_oa_input_width))
                     ),
                     column(
                       3,

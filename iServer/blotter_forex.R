@@ -23,7 +23,7 @@ observeEvent({
   tgt_c <- input$tgt_curr
   tgt_v <- input$tgt_val
   req_c <- input$req_curr
-  cb <- port_info()$cash_balance
+  cb <- portf1_info()$cash_balance
   
   if(tgt_c != "CAD"){
     exch_rate <- cb[cb$Currency == tgt_c,"Exchange Rate"]
