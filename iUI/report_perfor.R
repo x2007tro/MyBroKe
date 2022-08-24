@@ -6,14 +6,14 @@ perfor_tp <- tabPanel(
   
   tabsetPanel(
     
-    # return table
     tabPanel(
-      "MWRR",
+      "Return",
       
       fluidRow(
         column(
           12,
           tags$br(),
+          tags$h3("MWRR"),
           tags$div(
             
             fluidRow(
@@ -32,13 +32,8 @@ perfor_tp <- tabPanel(
             )
           )
         )
-      )
-    ),
-    
-    # return table
-    tabPanel(
-      "TWRR",
-
+      ),
+      
       fluidRow(
         column(
           12,
@@ -61,12 +56,7 @@ perfor_tp <- tabPanel(
             )
           )
         )
-      )
-    ),
-    
-    # return table
-    tabPanel(
-      "Return Table",
+      ),
       
       fluidRow(
         column(
@@ -121,6 +111,7 @@ perfor_tp <- tabPanel(
           )
         )
       )
+      
     ),
     
     # return curve
