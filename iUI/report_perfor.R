@@ -12,7 +12,6 @@ perfor_tp <- tabPanel(
       fluidRow(
         column(
           12,
-          tags$br(),
           tags$h3("MWRR"),
           tags$div(
             
