@@ -204,7 +204,8 @@ output$perfor_table_acct2 <- DT::renderDataTable({
 })
 
 output$perfor_table_oa <- DT::renderDataTable({
-  rets <- perfor_data_oa()
+  rets <- perfor_data_oa() %>% 
+    dplyr::select(-`Account.Number`)
   DT::datatable(
     rets, 
     options = list(
