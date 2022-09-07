@@ -16,7 +16,7 @@ tmp <- readxl::read_excel('./updater/source.xlsx', sheet = 'FundTransferHistory'
 WriteDataToSS(db_obj, tmp, "MyBroKe_FundTransferHistory")
 
 tmp <- readxl::read_excel('./updater/source.xlsx', sheet = 'FundTransferHistoryOA')
-WriteDataToSS(db_obj, tmp, "MyBroKe_FundTransferHistoryOA")
+WriteDataToSS(db_obj, tmp, "MyBroKe_FundTransferHistoryOA", apd = TRUE)
 
 tmp <- readxl::read_excel('./updater/source.xlsx', sheet = 'MyBrokerAccounts')
 WriteDataToSS(db_obj, tmp, "MyBroKe_Accounts")
