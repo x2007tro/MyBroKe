@@ -73,7 +73,7 @@ tradable_curr <- unique(ReadDataFromSS(db_obj, "MyBroKe_CashBalanceMap")$Currenc
 
 ##
 # accounts
-other_broker_account_alias <- c('LIRA Ke', 'TFSA Tong','RRSP Tong')
+other_broker_account_alias <- c('LIRA Ke', 'TFSA Tong','RRSP Tong','RESP Family')
 other_broker_account_numbers <- tmp_accts[tmp_accts$Alias %in% other_broker_account_alias,'Account.Number']
 names(other_broker_account_numbers) <- other_broker_account_alias
 
