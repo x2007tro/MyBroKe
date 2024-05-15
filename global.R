@@ -55,7 +55,8 @@ db_obj <- list(
 #
 # load IBKR account code
 #
-tmp_accts <- ReadDataFromSS(db_obj, "MyBroKe_Accounts")
+tmp_accts <- ReadDataFromSS(db_obj, "MyBroKe_Accounts") %>% 
+  dplyr::arrange(Sort.Order)
 acct_number1 <- tmp_accts[tmp_accts$Account.Number == 'U1989090','Account.Number'][1]
 acct_number2 <- tmp_accts[tmp_accts$Account.Number == 'U10048362','Account.Number'][1]
 acct_alias1 <- tmp_accts[tmp_accts$Account.Number == 'U1989090','Alias'][1]
@@ -73,9 +74,10 @@ tradable_curr <- unique(ReadDataFromSS(db_obj, "MyBroKe_CashBalanceMap")$Currenc
 
 ##
 # accounts
-other_broker_account_alias <- c('LIRA Ke', 'TFSA Tong','RRSP Tong','RESP Family')
+other_broker_account_alias <- c('LIRA Ke', 'TFSA Tong','RRSP Tong', 'RESP Family', 'Margin Tong')
 other_broker_account_numbers <- tmp_accts[tmp_accts$Alias %in% other_broker_account_alias,'Account.Number']
-names(other_broker_account_numbers) <- other_broker_account_alias
+other_broker_account_headers <- tmp_accts[tmp_accts$Alias %in% other_broker_account_alias,'Alias']
+names(other_broker_account_numbers) <- other_broker_account_headers
 
 #
 # Load API keys
